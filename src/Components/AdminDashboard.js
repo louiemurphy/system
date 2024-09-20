@@ -9,13 +9,15 @@ function AdminDashboard() {
     const [selectedRequest, setSelectedRequest] = useState(null); // State to store the selected request
     const [selectedTeamMember, setSelectedTeamMember] = useState(''); // State for the selected team member
     const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
-    const [editingRequestId, setEditingRequestId] = useState(null); // Track which request is being edited
+    const [currentPage, setCurrentPage] = useState(1); // Track current page for pagination
+    const requestsPerPage = 5; // Number of requests per page
 
     const statusOptions = [
         { value: 0, label: 'Pending' },
         { value: 1, label: 'Ongoing' },
         { value: 2, label: 'Completed' }
-      ]; // Status options
+    ]; // Status options
+
     const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata']; // Team members
 
     // Fetch requests from the backend
@@ -40,6 +42,15 @@ function AdminDashboard() {
         fetchRequests(); // Fetch requests on component mount
     }, []);
 
+    // Pagination logic
+    const indexOfLastRequest = currentPage * requestsPerPage;
+    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+    const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
+
+    const totalPages = Math.ceil(requests.length / requestsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     // Function to open the overlay and set the selected request
     const openOverlay = (request) => {
         setSelectedRequest(request); // Set the request being assigned
@@ -56,13 +67,11 @@ function AdminDashboard() {
     // Function to handle saving the assignment
     const handleSave = async () => {
         if (selectedTeamMember) {
-            // Update local state first
             const updatedRequests = requests.map((request) =>
                 request._id === selectedRequest._id ? { ...request, assignedTo: selectedTeamMember } : request
             );
             setRequests(updatedRequests);
 
-            // Send the update to the backend
             try {
                 const response = await fetch(`http://localhost:5000/api/requests/${selectedRequest._id}`, {
                     method: 'PUT',
@@ -75,9 +84,6 @@ function AdminDashboard() {
                 if (!response.ok) {
                     throw new Error('Failed to update request on the server');
                 }
-
-                const data = await response.json();
-                console.log('Backend response:', data);
             } catch (err) {
                 console.error('Error updating request:', err);
             }
@@ -89,16 +95,13 @@ function AdminDashboard() {
     };
 
     // Function to handle updating the status
-    // Function to handle updating the status
     const handleStatusChange = async (requestId, newStatus) => {
         try {
-            // Update local state with the new status
             const updatedRequests = requests.map((request) =>
                 request._id === requestId ? { ...request, status: newStatus } : request
             );
             setRequests(updatedRequests);  // This updates the frontend state
-    
-            // Now, send the updated status to the backend
+
             const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
                 method: 'PUT',
                 headers: {
@@ -106,20 +109,14 @@ function AdminDashboard() {
                 },
                 body: JSON.stringify({ status: newStatus }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update request status');
             }
-    
-            const data = await response.json();
-            console.log('Status updated successfully on the backend:', data);
         } catch (err) {
             console.error('Error updating status:', err);
         }
     };
-    
-    
-    
 
     // Function to open the modal with request details
     const openModal = (request) => {
@@ -163,7 +160,6 @@ function AdminDashboard() {
                         <h3>Total Requests</h3>
                         <div className="overview-data">
                             <p>Total Requests: {requests.length}</p>
-                            <p>New Request Today: --</p>
                             <p>Last Added Request: {requests[requests.length - 1]?.timestamp}</p>
                         </div>
                     </div>
@@ -189,7 +185,7 @@ function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Table of requests */}
+                {/* Table of requests with pagination */}
                 <div className="table-container">
                     <h3>List of Requests</h3>
                     <table className="request-table">
@@ -204,22 +200,21 @@ function AdminDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {requests.map((request) => (
+                            {currentRequests.map((request) => (
                                 <tr key={request._id}>
                                     <td onClick={() => openModal(request)}>{request.referenceNumber}</td>
                                     <td onClick={() => openModal(request)}>{request.timestamp}</td>
                                     <td onClick={() => openModal(request)}>{request.projectTitle}</td>
                                     <td onClick={() => openModal(request)}>{request.assignedTo || 'Unassigned'}</td>
                                     <td>
-                                        {/* Status Dropdown */}
                                         <select
-                                            value={request.status} // Assuming request.status is a number
-                                            onChange={(e) => handleStatusChange(request._id, Number(e.target.value))} // Convert value to number
-                                            disabled={request.status === 2} // Disable for completed requests
-                                            >
+                                            value={request.status}
+                                            onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
+                                            disabled={request.status === 2}
+                                        >
                                             {statusOptions.map((statusOption) => (
                                                 <option key={statusOption.value} value={statusOption.value}>
-                                                {statusOption.label}
+                                                    {statusOption.label}
                                                 </option>
                                             ))}
                                         </select>
@@ -239,6 +234,19 @@ function AdminDashboard() {
                             ))}
                         </tbody>
                     </table>
+
+                    {/* Pagination controls */}
+                    <div className="pagination">
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => paginate(index + 1)}
+                                className={currentPage === index + 1 ? 'active' : ''}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Modal for request details */}

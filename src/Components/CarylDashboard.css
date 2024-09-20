@@ -1,0 +1,61 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.profile-sidebar {
+  width: 20%;
+  padding: 20px;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-image-container {
+  width: 150px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.profile-image {
+  width: 100%;
+  height: auto;
+}
+
+.profile-details {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.dashboard-content {
+  width: 80%;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.task-table th, .task-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.task-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}

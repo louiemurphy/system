@@ -13,8 +13,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // CORS configuration
 app.use(cors({
@@ -28,15 +28,15 @@ app.use(express.json());
 
 // Root route to check if the API is running
 app.get("/api", (req, res) => {
-  res.json({ message: "this is for backend" });
+  res.json({ message: "API is running" });
 });
 
 // Define a Mongoose schema and model for requests
 const requestSchema = new mongoose.Schema({
   referenceNumber: String,
   timestamp: String,
-  email: String,
-  name: String,
+  email: String, // Email of the client making the request
+  name: String, // Name of the client making the request
   typeOfClient: String,
   classification: String,
   projectTitle: String,
@@ -45,28 +45,42 @@ const requestSchema = new mongoose.Schema({
   requestType: String,
   dateNeeded: String,
   specialInstructions: String,
-  assignedTo: String,
-  status: Number,
+  assignedTo: String, // Name of the evaluator, e.g., 'Caryl Apa'
+  status: Number, // 0 = Pending, 1 = Ongoing, 2 = Completed
 });
 
 const Request = mongoose.model('Request', requestSchema);
 
-
-// GET all requests
+// GET all requests or filter by assignedTo (e.g., for CarylDashboard)
+// GET all requests or filter by assignedTo (e.g., for CarylDashboard)
 app.get("/api/requests", async (req, res) => {
   try {
-    const requests = await Request.find();
+    const { assignedTo } = req.query; // Extract 'assignedTo' from query params
+    
+    let filter = {};
+    if (assignedTo) {
+      // Filter requests assigned to the given team member, exclude unassigned ones (null, empty string)
+      filter = {
+        assignedTo: { 
+          $eq: assignedTo, 
+          $ne: "", // Exclude empty strings
+          $exists: true // Exclude null values
+        }
+      };
+    }
+
+    const requests = await Request.find(filter); // Fetch filtered or all requests
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: "Error fetching requests" });
   }
 });
 
-// POST a new request
+// POST a new request (for request creation)
 app.post("/api/requests", async (req, res) => {
   try {
     const newRequest = req.body;
-    const newReferenceNumber = Math.floor(1000 + Math.random() * 9000).toString();
+    const newReferenceNumber = Math.floor(1000 + Math.random() * 9000).toString(); // Generate random reference number
     const timestamp = new Date().toLocaleString();
 
     const formattedRequest = {
@@ -76,54 +90,32 @@ app.post("/api/requests", async (req, res) => {
     };
 
     const request = new Request(formattedRequest);
-    await request.save();
-    res.status(201).json(request);
+    await request.save(); // Save the new request to the database
+    res.status(201).json(request); // Respond with the created request
   } catch (error) {
     res.status(500).json({ message: "Error creating request" });
   }
 });
 
-// PUT - Update the status or other fields of a request
+// PUT request to update an existing request (for updating status or assignedTo)
 app.put("/api/requests/:id", async (req, res) => {
   try {
     const requestId = req.params.id;
-    let updatedFields = req.body;
+    const updateData = req.body;
 
-    // Handle the status conversion if the 'status' field is provided
-    if (updatedFields.status) {
-      if (updatedFields.status === 'Pending') {
-        updatedFields.status = 0;
-      } else if (updatedFields.status === 'Ongoing') {
-        updatedFields.status = 1;
-      } else if (updatedFields.status === 'Complete') {
-        updatedFields.status = 2;
-      }
+    const updatedRequest = await Request.findByIdAndUpdate(requestId, updateData, { new: true });
+
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
     }
 
-    // Log the incoming update for debugging purposes
-    console.log(`Updating request ${requestId} with data:`, updatedFields);
-
-    // Find the request by ID and update the specified fields
-    const request = await Request.findByIdAndUpdate(
-      requestId,
-      { $set: updatedFields }, // Update the status field and any other provided fields
-      { new: true, runValidators: true } // Return the updated document
-    );
-
-    if (request) {
-      res.json(request); // Send back the updated request
-    } else {
-      res.status(404).json({ message: "Request not found" });
-    }
+    res.json(updatedRequest); // Respond with the updated request
   } catch (error) {
-    console.error("Error updating request:", error);
     res.status(500).json({ message: "Error updating request" });
   }
 });
 
-
-
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
