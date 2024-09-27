@@ -1,396 +1,498 @@
 /* General Styling */
-body {
+body, html {
     font-family: 'Poppins', sans-serif;
-    background-color: #f0f2f5;
+    background-color: white;
     margin: 0;
     padding: 0;
     color: #333;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Remove scrollbars */
 }
 
-.dashboard-container {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* Sidebar Styling */
-.sidebar {
-    width: 260px;
-    background-color: #1D2D50;
-    height: 100vh;
-    padding: 40px 20px;
-    color: #fff;
-    position: fixed;
-    left: 0;
-    top: 0;
+.admin-dashboard {
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    margin: 20px;
 }
 
-.sidebar-header {
-    text-align: center;
-    margin-bottom: 30px;
+.header-wrapper {
+    margin-bottom: 20px; /* Spacing below header */
 }
 
-.sidebar-header h2 {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
+.status-summary-wrapper {
+    margin-bottom: 20px; /* Spacing below status summary */
 }
 
-.sidebar-menu {
-    list-style: none;
+.dashboard-container2 {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    padding-left: 250px; /* Adjust the padding for the fixed sidebar */
+    box-sizing: border-box; /* Ensure padding is part of the width */
+}
+
+/* Sidebar */
+.sidebar2 {
+    width: 250px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.sidebar2 ul {
+    list-style-type: none;
     padding: 0;
+}
+
+.sidebar2 ul li {
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar2 ul li:hover {
+    background-color: #34495e;
+    border-radius: 5px;
+}
+
+/* Header Content */
+.header-content2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center; /* Center items vertically within the header */
+    padding: 20px;
+    background-color: #fff;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd; /* Optional: Add bottom border for separation */
+}
+
+.header-left2 {
+    flex: 1; /* Allow this to grow and take space */
+    display: flex;
+    align-items: center;
+    margin-left: 306px;
+}
+
+.header-right2 {
+    display: flex;
+    align-items: center;
+    margin-right: 0px;
+}
+
+.header-right2 * {
+    font-weight: bold; /* Make all child elements bold */
+}
+
+/* Header Title and Paragraph */
+.header-content2 h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+}
+
+.header-content2 p {
+    font-size: 14px;
+    margin: 0;
+    text-align: center;
+}
+
+/* Status Summary Bar */
+.stat-container2 {
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 400px); /* Adjust to fit the width after sidebar */
+    padding: 20px 30px;
+    height: 150px; /* Fixed height for alignment */
+    background-color: #fff;
+    border-radius: 20px;
+    margin-left: 330px; /* Push it to the right */
+    width: 83%; /* Set width relative to parent */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for a more defined look */
+}
+
+.stat-box2 {
+    background-color: #d3d7e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #1D2D50;
+    font-weight: 600;
+    flex: 1; /* Make each box take equal space */
+    margin: 0 5px; /* Adjust margin for equal spacing */
+    display: flex;
+    flex-direction: column; /* Stack label and value vertically */
+    justify-content: center; /* Center the label and value vertically */
+    align-items: center; /* Center the content horizontally */
+}
+
+.label {
+    font-size: 16px; /* Label font size */
+    font-weight: normal; /* Normal weight for the label */
+    color: #1D2D50; /* Color for the label */
+}
+
+.value {
+    font-size: 24px; /* Larger font size for the value */
+    margin-top: 5px; /* Space between label and value */
+    font-weight: bold; /* Bold font for the value */
+    color: #1D2D50; /* Color for the value */
+}
+
+
+.stat-box2:first-child {
+    margin-left: 0; /* Remove left margin from the first box */
+}
+
+.stat-box2:last-child {
+    margin-right: 0; /* Remove right margin from the last box */
+}
+
+/* Main Content Section */
+.content-section2 {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
+    height: calc(124vh - 200px); /* Adjusted height to account for header and status summary */
+    padding: 0 20px;
+    margin: 1px;
+    box-sizing: border-box;
+}
+
+/* Request List Container */
+.request-list2 {
+    flex-grow: 8;
+    background-color: #fff;
+    padding: 20px; 
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: calc(95vh - 240px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    margin-left: 55px;
+    width: calc(102% - 70px); /* Increased width to 93% for a slightly wider request list */
+}
+
+
+/* Search Bar */
+.search-bar2 {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
     margin: 0;
 }
 
-.sidebar-menu li {
-    margin: 12px 0;
-    font-size: 16px;
-    color: #f4f4f4;
-    padding: 10px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    transition: background-color 0.3s ease, padding-left 0.3s ease;
-}
-
-.sidebar-menu li:hover {
-    cursor: pointer;
-    background-color: #162240;
-    padding-left: 20px;
-}
-
-/* Main Content Area */
-.main-content {
-    flex-grow: 1;
-    margin-left: 280px; /* Adjust for sidebar */
-    padding: 20px;
-    background-color: #f0f2f5;
-    transition: margin-left 0.3s ease;
-    min-height: 100vh;
-}
-
-/* Top Section (Overview + Profiling) */
-.top-section {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px; /* Reduced gap for better layout */
-    margin-bottom: 30px;
-    flex-wrap: wrap; /* Ensure it wraps on smaller screens */
-}
-
-/* Flex item panels: Overview, Profiling */
-.overview-panel, .profiling-panel {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 10px; /* Reduced padding */
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    flex-basis: calc(50% - 10px); /* Adjusted for smaller width on desktop */
-    transition: transform 0.3s ease;
-    flex-grow: 1;
-    flex-shrink: 1;
-}
-
-.overview-panel:hover, .profiling-panel:hover {
-    transform: translateY(-5px);
-}
-
-.overview-panel h3, .profiling-panel h3 {
-    margin-top: 0;
-    font-size: 18px; /* Slightly smaller font size */
-    color: #1D2D50;
-    font-weight: 600;
-}
-
-.overview-data p {
-    margin: 5px 0; /* Reduced margin */
-    font-size: 14px;
-    color: #555;
-}
-
-/* Profiling Cards Section */
-.profiling-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 5px; /* Reduced gap for more compact layout */
-}
-
-/* Profile Card Design */
-.profile-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-.profile-info {
-    display: flex;
-    align-items: center;
-}
-
-.profile-pic-placeholder {
-    width: 30px;
-    height: 30px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 10px;
-    color: #555;
-    margin-right: 8px;
-}
-
-.progress-bar {
-    width: 60%;
-    height: 4px;
-    background-color: #ddd;
-    border-radius: 6px;
-    margin-top: 4px;
-}
-
-.progress-bar-complete {
-    background-color: #28a745;
+/* Table Container */
+.table-container2 {
     width: 100%;
-    height: 100%;
+    overflow-x: auto; /* Horizontal scrolling if table exceeds width */
+    height: calc(90vh - 300px);
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-/* Table Styling */
-.table-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.table-container h3 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #1D2D50;
-    font-weight: 600;
-}
-
-.request-table {
+/* Request Table */
+.request-table2 {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
-.request-table th, .request-table td {
-    padding: 10px 16px; /* Reduced padding */
+.request-table2 th, .request-table2 td {
+    padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #e0e0e0;
+    white-space: normal; /* Allow normal text wrapping */
+    word-break: break-word; /* Break long words onto a new line */
 }
 
-.request-table th {
+/* Set fixed widths for specific columns */
+.request-table2 th:nth-child(3), /* Project Title Column */
+.request-table2 td:nth-child(3) {
+    width: 30%; /* Adjust width to prevent long text from spilling */
+}
+
+.request-table2 th:nth-child(4), /* Assigned To Column */
+.request-table2 td:nth-child(4) {
+    width: 15%; /* Adjust width for better spacing */
+}
+
+.request-table2 th {
     background-color: #1D2D50;
     color: white;
     font-size: 14px;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
-.request-table td {
-    font-size: 14px;
+.request-table2 td {
+    font-size: 14px;    
     color: #333;
 }
 
-.request-table tr:nth-child(even) {
+.request-table2 tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.request-table tr:hover {
+.request-table2 tr:hover {
     background-color: #f1f1f1;
 }
 
-/* Button Styling in the Table */
-.request-table button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 5px 10px; /* Reduced padding */
-    cursor: pointer;
-    font-size: 12px; /* Reduced font size */
-    transition: background-color 0.3s ease, transform 0.2s ease;
+
+
+
+
+
+/* Workload Section */
+.content-section2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%; /* Ensure it takes the full width */
 }
 
-.request-table button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+.request-list-wrapper {
+    flex-grow: 8; /* Allow request list to take the majority of the available space */
+    width: 70%; /* Explicitly define 70% width for the request list */
+    margin-right: 5; /* Reduce margin to move workload closer */
 }
 
-/* Assign Button Styling */
-.request-table button.assign-button {
+.workload-wrapper {
+    flex-grow: 2; /* Allow workload section to take proportionally less space */
+    width: 30%; /* Explicitly define 30% width for the workload section */
+    min-width: 0px; /* Ensure minimum width for the workload section */
+    max-width: 280px; /* Slightly reduce max width for better balance */
+}
+
+.workload-section2 {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(10, 2, 2, 0.1);
+    padding: 10px;
+    height: calc(95vh - 240px); /* Match the height of the request list */
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.workload-profile2 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+
+
+.profile-pic-placeholder2 {
+    width: 40px;
+    height: 40px;
     background-color: #1D2D50;
+    border-radius: 50%;
     color: white;
-    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.progress-bar2 {
+    width: 60%; /* You can adjust this as needed */
+    height: 5px;
+    background-color: #ddd;
     border-radius: 6px;
-    padding: 8px 14px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.progress-bar-complete2 {
+    background-color: #28a745;
+    width: 70%; /* Consider making this dynamic */
+    height: 100%;
+}
+
+
+
+/* Modal and Lightbox Styling */
+.modal2, .overlay2 {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    text-align: center;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.request-table button.assign-button:hover {
-    background-color: #162240;
-    transform: scale(1.05);
+.lightbox-content2, .modal-content2 {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    overflow: hidden;
 }
 
-/* Lightbox Actions */
-.lightbox-actions {
+.lightbox-content2 h3, .modal-content2 h3 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1D2D50;
+}
+
+.lightbox-actions2 {
     display: flex;
     justify-content: flex-end;
     margin-top: 20px;
 }
 
-/* Action Buttons for Lightbox */
-.lightbox-actions button {
+.lightbox-actions2 button {
     background-color: #1D2D50;
-    color: #ffffff;
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
     margin-left: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.lightbox-actions button:hover {
+.lightbox-actions2 button:hover {
     background-color: #162240;
-    transform: scale(1.05);
 }
 
-/* Close Button Styling for Lightbox */
-.close-overlay {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #1D2D50;
-    transition: color 0.3s ease;
+.lightbox-actions2 button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-.close-overlay:hover {
-    color: #162240;
-}
-
-/* Overlay Styles */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(29, 45, 80, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-/* Lightbox Content Styles */
-.lightbox-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    position: relative;
-    max-width: 600px;
-    width: 100%;
-}
-
-/* Typography for the lightbox */
-.lightbox-content h3 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #1D2D50;
-}
-
-/* Modal Styling */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-/* Full Screen Modal Content */
-.modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    overflow: auto;
-}
-
-/* Typography for the modal */
-.modal-content h3 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #1D2D50;
-}
-
-/* Responsive Design Adjustments for Modal */
+/* Responsive Design */
 @media (max-width: 768px) {
-    .lightbox-content, .modal-content {
-        width: 90%;
-        border-radius: 10px;
-        padding: 20px;
+    .header-content2 {
+        flex-direction: column;
+        text-align: center;
     }
 
-    .top-section {
+    .content-section2 {
+        flex-direction: column;
+        margin-left: 0;
+    }
+
+    .sidebar2 {
+        width: 100%;
+        position: relative;
+    }
+
+    .sidebar2 ul li {
+        text-align: center;
+    }
+
+    .workload-section2 {
+        width: 100%;
+    }
+
+    .request-list2 {
+        width: 100%;
+    }
+
+    .stat-container2 {
         flex-direction: column;
     }
 
-    .overview-panel, .profiling-panel {
-        flex-basis: 100%;
-        padding: 12px;
+    .stat-box2 {
+        margin: 10px 0; /* Adjust margin for vertical stacking */
+    }
+
+    .assign-button2 {
+        width: 100%; /* Make the button full-width on smaller screens */
     }
 }
-/* Status Indicator Styles */
-.status-pill {
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-block;
-    color: #fff;
+
+.modal2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it appears on top of other content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Remove any padding */
 }
 
-.status-pill.pending {
-    background-color: #ffc107; /* Yellow for Pending */
+.modal-content2 {
+    background-color: white;
+    width: 100vw; /* Make the modal content cover the full viewport width */
+    height: 90vh; /* Make the modal content cover the full viewport height */
+    padding: 20px;
+    border-radius: 0; /* Remove the border radius */
+    box-shadow: none; /* Remove the box shadow */
+    overflow-y: auto; /* Allows scrolling if the content exceeds the modal height */
+    position: relative;
 }
 
-.status-pill.ongoing {
-    background-color: #17a2b8; /* Blue for Ongoing */
+.modal-content2 h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-.status-pill.completed {
-    background-color: #28a745; /* Green for Completed */
+.modal-content2 table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-content2 table th, 
+.modal-content2 table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.modal-content2 table th {
+    width: 30%; /* Label column width */
+}
+
+.modal-content2 table td {
+    width: 70%; /* Value column width */
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.close-modal-btn:hover {
+    background-color: #c9302c;
 }

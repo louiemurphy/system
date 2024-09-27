@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests from frontend
+  origin: 'http://localhost:3000', // Allow requests from the frontend
   methods: ['GET', 'POST', 'PUT'],
   allowedHeaders: ['Content-Type'],
 }));
@@ -35,8 +35,8 @@ app.get("/api", (req, res) => {
 const requestSchema = new mongoose.Schema({
   referenceNumber: String,
   timestamp: String,
-  email: String, // Email of the client making the request
-  name: String, // Name of the client making the request
+  email: String,
+  name: String,
   typeOfClient: String,
   classification: String,
   projectTitle: String,
@@ -45,38 +45,36 @@ const requestSchema = new mongoose.Schema({
   requestType: String,
   dateNeeded: String,
   specialInstructions: String,
-  assignedTo: String, // Name of the evaluator, e.g., 'Caryl Apa'
+  assignedTo: String,
   status: Number, // 0 = Pending, 1 = Ongoing, 2 = Completed
 });
 
 const Request = mongoose.model('Request', requestSchema);
 
-// GET all requests or filter by assignedTo (e.g., for CarylDashboard)
-// GET all requests or filter by assignedTo (e.g., for CarylDashboard)
+// GET all requests or filter by assignedTo
 app.get("/api/requests", async (req, res) => {
   try {
-    const { assignedTo } = req.query; // Extract 'assignedTo' from query params
-    
+    const { assignedTo } = req.query;
     let filter = {};
+    
     if (assignedTo) {
-      // Filter requests assigned to the given team member, exclude unassigned ones (null, empty string)
       filter = {
-        assignedTo: { 
-          $eq: assignedTo, 
-          $ne: "", // Exclude empty strings
-          $exists: true // Exclude null values
+        assignedTo: {
+          $eq: assignedTo,
+          $ne: "",
+          $exists: true
         }
       };
     }
 
-    const requests = await Request.find(filter); // Fetch filtered or all requests
+    const requests = await Request.find(filter);
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: "Error fetching requests" });
   }
 });
 
-// POST a new request (for request creation)
+// POST a new request
 app.post("/api/requests", async (req, res) => {
   try {
     const newRequest = req.body;
@@ -90,14 +88,14 @@ app.post("/api/requests", async (req, res) => {
     };
 
     const request = new Request(formattedRequest);
-    await request.save(); // Save the new request to the database
-    res.status(201).json(request); // Respond with the created request
+    await request.save();
+    res.status(201).json(request);
   } catch (error) {
     res.status(500).json({ message: "Error creating request" });
   }
 });
 
-// PUT request to update an existing request (for updating status or assignedTo)
+// PUT request to update an existing request
 app.put("/api/requests/:id", async (req, res) => {
   try {
     const requestId = req.params.id;
@@ -109,7 +107,7 @@ app.put("/api/requests/:id", async (req, res) => {
       return res.status(404).json({ message: "Request not found" });
     }
 
-    res.json(updatedRequest); // Respond with the updated request
+    res.json(updatedRequest);
   } catch (error) {
     res.status(500).json({ message: "Error updating request" });
   }

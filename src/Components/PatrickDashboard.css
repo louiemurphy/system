@@ -1,52 +1,227 @@
-/* CarylDashboard.css */
-.dashboard-container {
-    display: flex;
-  }
+/* PatrickDashboard.css */
+.dashboard-container4 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Consistent gap between elements */
+  padding: 15px; 
+  box-sizing: border-box;
+  background-color: #f9fafc;
+  min-height: 100vh;  
+}
+
+/* Profile Sidebar */
+.profile-sidebar4 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px; 
+  width: 330px; 
+  background-color: #e5e9ec; /* Consolidated background color */
+  border-right: 1px solid #ddd;
+  border-radius: 10px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.profile-image-container4 {
+  width: 120px; 
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 10px; /* Aligned margin */
+}
+
+.profile-image4 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-details4 {
+  text-align: center;
+}
+
+.profile-details4 h3 {
+  margin: 0;
+  font-size: 1.2em; /* Reduced font size for balance */
+}
+
+.profile-details4 p {
+  color: #666;
+  margin-top: 5px; 
+  font-size: 0.9em; 
+}
+
+/* Main Dashboard Content */
+.dashboard-content4 {
+  flex: 1;
+  margin-left: 330px; /* Adjusted space for sidebar */
+  padding: 15px;
+  background-color: #f9fafc;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Status Summary Section */
+.status-summary4 {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px auto; /* Added margin for top and bottom spacing */
+  gap: 50px; /* Controlled spacing between boxes */
+  max-width: calc(100% - 330px); /* Adjusting for sidebar */
+  width: 100%;
+  padding: 0;
+  margin-left: 320px;
+}
+
+/* Individual Status Box */
+.status-box4 {
+  background-color: #d3d7e0;
+  border-radius: 8px;
+  padding: 20px;
+  flex: 1; /* Allow boxes to grow evenly */
+  text-align: center;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
   
-  .profile-sidebar {
-    display: flex;
+}
+
+.status-box4:hover {
+  transform: scale(1.05); /* Slight hover effect */
+}
+
+/* Table Container Styling */
+.table-container4 {
+  margin-left: 330px; /* Match sidebar width */
+  margin-top: 20px; /* Space between status summary and table */
+  width: calc(100% - 330px); /* Responsive width */
+  max-width: 900px; /* Reduced max-width for balance */
+}
+
+/* Request Table Styling */
+.request-table4 {
+  width: 173%; /* Changed to 100% for better fit */
+  border-collapse: collapse;
+  margin-top: 10px; /* Margin for top spacing */
+  border: 1px solid #ddd;
+}
+
+.request-table4 th,
+.request-table4 td {
+  padding: 10px; 
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 15px; 
+}
+
+.request-table4 th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.request-table4 td {
+  background-color: #fff;
+}
+
+.request-table4 select {
+  padding: 4px; 
+  font-size: 12px; 
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.request-table4 select:hover {
+  border-color: #1d2d50; 
+}
+
+/* Modal Styling */
+.modal4 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content4 {
+  background-color: #fff;
+  padding: 25px; 
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header4 {
+  font-size: 1.2em; /* Slightly reduced font size */
+  margin-bottom: 15px;
+}
+
+.modal-table4 {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-table4 th,
+.modal-table4 td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.modal-table4 th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.modal-table4 td {
+  background-color: #fff;
+}
+
+.close-modal-btn {
+  margin-top: 15px;
+  padding: 10px 18px; 
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-sidebar4 {
+    width: 200px;
+  }
+
+  .dashboard-content4 {
+    margin-left: 220px;
+  }
+
+  .status-summary4 {
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-    width: 250px;
-    background-color: #f5f5f5;
-    border-right: 1px solid #ddd;
-    height: 100vh; /* Full height */
-    position: fixed; /* Fixed to the left */
-    left: 0;
-    top: 0;
+    gap: 15px;
   }
-  
-  .profile-image-container {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  
-  .profile-image {
+
+  .status-box4 {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
-  
-  .profile-details {
-    text-align: center;
+
+  .modal-content4 {
+    width: 95%;
   }
-  
-  .profile-details h3 {
-    margin: 0;
-    font-size: 1.5em;
-  }
-  
-  .profile-details p {
-    color: #666;
-  }
-  
-  .dashboard-content {
-    flex: 1;
-    padding: 20px;
-    margin-left: 270px; /* Create space for the fixed sidebar */
-  }
-  
+}

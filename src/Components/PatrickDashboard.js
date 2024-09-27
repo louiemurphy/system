@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import './PatrickDashboard.css'; // Ensure you have proper styling here
+import './PatrickDashboard.css';
 
 function PatrickDashboard() {
-  const [requests, setRequests] = useState([]); // Store the list of requests
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [selectedRequest, setSelectedRequest] = useState(null); // Selected request for modal
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
-  const teamMember = "Patrick Paclibar";  // Explicitly set team member for filtering
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const teamMember = "Patrick Paclibar";
 
-  // Fetching requests assigned to Patrick on component mount
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -21,88 +20,131 @@ function PatrickDashboard() {
         }
         const data = await response.json();
         setRequests(data);
-        setLoading(false); // Stop loading once requests are fetched
+        setLoading(false);
       } catch (err) {
-        setError(err.message); // Set error state if request fails
+        setError(err.message);
         setLoading(false);
       }
     };
 
     fetchRequests();
-  }, [teamMember]); // Only run this once when the component mounts
+  }, [teamMember]);
 
-  // Function to open the modal and set the selected request
+  const handleStatusChange = async (requestId, newStatus) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update status');
+      }
+      setRequests(prevRequests =>
+        prevRequests.map(req =>
+          req._id === requestId ? { ...req, status: newStatus } : req
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const openModal = (request) => {
-    setSelectedRequest(request); // Set the request details
-    setModalVisible(true); // Show modal
+    setSelectedRequest(request);
+    setModalVisible(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
-    setModalVisible(false); // Hide modal
-    setSelectedRequest(null); // Reset the selected request
+    setModalVisible(false);
+    setSelectedRequest(null);
   };
 
-  // Render loading state
+  const handleDropdownClick = (e) => {
+    e.stopPropagation(); // Prevent the row click event
+  };
+
+  // Calculate total, open, and closed requests
+  const totalRequests = requests.length;
+  const openRequests = requests.filter(request => request.status === 1).length;
+  const closedRequests = requests.filter(request => request.status === 2).length;
+
   if (loading) {
     return <div>Loading requests...</div>;
   }
 
-  // Render error state
   if (error) {
     return <div>Error: {error} <button onClick={() => window.location.reload()}>Retry</button></div>;
   }
 
-  // Main return for Patrick's dashboard
   return (
-    <div className="dashboard-container">
-      {/* Sidebar with profile information */}
-      <div className="profile-sidebar">
-        <div className="profile-image-container">
-          <img className="profile-image" src="https://via.placeholder.com/150" alt="Patrick Paclibar" />
+    <div className="dashboard-container4">
+      {/* Status Summary at the Top */}
+      <div className="status-summary4">
+        <div className="status-box4">
+          <span className="status-value4">{totalRequests}</span>
+          <h3>Total Requests</h3>
         </div>
-        <div className="profile-details">
+        <div className="status-box4">
+          <span className="status-value4">{openRequests}</span>
+          <h3>Open Requests</h3>
+        </div>
+        <div className="status-box4">
+          <span className="status-value4">{closedRequests}</span>
+          <h3>Closed Requests</h3>
+        </div>
+      </div>
+
+      {/* Sidebar for Profile */}
+      <div className="profile-sidebar4">
+        <div className="profile-image-container4">
+          <img className="profile-image4" src="https://via.placeholder.com/150" alt="Patrick Paclibar" />
+        </div>
+        <div className="profile-details4">
           <h3>Patrick Paclibar</h3>
           <p>patrick.paclibar@mail.com</p>
         </div>
       </div>
 
-      {/* Main dashboard content */}
-      <div className="dashboard-content">
-        <h1>Welcome, Patrick Paclibar</h1>
-        <p>Here are your assigned requests:</p>
 
-        {/* Table displaying the list of requests */}
-        <div className="table-container">
+        <div className="table-container4">
           <h3>List of Requests</h3>
-          <table className="request-table">
+          <table className="request-table4">
             <thead>
               <tr>
                 <th>REQID</th>
                 <th>TIMESTAMP</th>
                 <th>PROJECT TITLE</th>
                 <th>STATUS</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {requests.length > 0 ? (
                 requests
-                  .filter(request => request.assignedTo === teamMember)  // Only show requests assigned to Patrick Paclibar
+                  .filter(request => request.assignedTo === teamMember)
                   .map((request) => (
-                    <tr key={request._id}>
+                    <tr key={request._id} onClick={() => openModal(request)}>
                       <td>{request.referenceNumber}</td>
                       <td>{request.timestamp}</td>
                       <td>{request.projectTitle}</td>
-                      <td>{request.status === 0 ? 'Pending' : request.status === 1 ? 'Ongoing' : 'Completed'}</td>
                       <td>
-                        <button onClick={() => openModal(request)}>View Details</button>
+                        <select
+                          value={request.status}
+                          onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
+                          onClick={handleDropdownClick} // Prevent row click event
+                        >
+                          <option value={0}>Pending</option>
+                          <option value={1}>Ongoing</option>
+                          <option value={2}>Completed</option>
+                        </select>
                       </td>
                     </tr>
                   ))
               ) : (
                 <tr>
-                  <td colSpan="5">No requests assigned to you</td>
+                  <td colSpan="4">No requests assigned to you</td>
                 </tr>
               )}
             </tbody>
@@ -110,63 +152,62 @@ function PatrickDashboard() {
         </div>
 
         {modalVisible && selectedRequest && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3 className="modal-header">Request Details</h3>
-      <table className="modal-table">
-        <tbody>
-          <tr>
-            <th>ID</th>
-            <td>{selectedRequest._id}</td>
-          </tr>
-          <tr>
-            <th>Email</th>
-            <td>{selectedRequest.email}</td>
-          </tr>
-          <tr>
-            <th>Name</th>
-            <td>{selectedRequest.name}</td>
-          </tr>
-          <tr>
-            <th>Type of Client</th>
-            <td>{selectedRequest.typeOfClient}</td>
-          </tr>
-          <tr>
-            <th>Classification</th>
-            <td>{selectedRequest.classification}</td>
-          </tr>
-          <tr>
-            <th>Project Title</th>
-            <td>{selectedRequest.projectTitle}</td>
-          </tr>
-          <tr>
-            <th>Philgeps Reference Number</th>
-            <td>{selectedRequest.philgepsReferenceNumber}</td>
-          </tr>
-          <tr>
-            <th>Product Type</th>
-            <td>{selectedRequest.productType}</td>
-          </tr>
-          <tr>
-            <th>Request Type</th>
-            <td>{selectedRequest.requestType}</td>
-          </tr>
-          <tr>
-            <th>Date Needed</th>
-            <td>{selectedRequest.dateNeeded}</td>
-          </tr>
-          <tr>
-            <th>Special Instructions</th>
-            <td>{selectedRequest.specialInstructions}</td>
-          </tr>
-        </tbody>
-      </table>
-      <button onClick={closeModal} className="close-modal-btn">Close</button>
-    </div>
-  </div>
-)}
-
-      </div>
+          <div className="modal4">
+            <div className="modal-content4">
+              <h3 className="modal-header4">Request Details</h3>
+              <table className="modal-table4">
+                <tbody>
+                  <tr>
+                    <th>ID</th>
+                    <td>{selectedRequest._id}</td>
+                  </tr>
+                  <tr>
+                    <th>Email</th>
+                    <td>{selectedRequest.email}</td>
+                  </tr>
+                  <tr>
+                    <th>Name</th>
+                    <td>{selectedRequest.name}</td>
+                  </tr>
+                  <tr>
+                    <th>Type of Client</th>
+                    <td>{selectedRequest.typeOfClient}</td>
+                  </tr>
+                  <tr>
+                    <th>Classification</th>
+                    <td>{selectedRequest.classification}</td>
+                  </tr>
+                  <tr>
+                    <th>Project Title</th>
+                    <td>{selectedRequest.projectTitle}</td>
+                  </tr>
+                  <tr>
+                    <th>Philgeps Reference Number</th>
+                    <td>{selectedRequest.philgepsReferenceNumber}</td>
+                  </tr>
+                  <tr>
+                    <th>Product Type</th>
+                    <td>{selectedRequest.productType}</td>
+                  </tr>
+                  <tr>
+                    <th>Request Type</th>
+                    <td>{selectedRequest.requestType}</td>
+                  </tr>
+                  <tr>
+                    <th>Date Needed</th>
+                    <td>{selectedRequest.dateNeeded}</td>
+                  </tr>
+                  <tr>
+                    <th>Special Instructions</th>
+                    <td>{selectedRequest.specialInstructions}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button onClick={closeModal} className="close-modal-btn">Close</button>
+            </div>
+          </div>
+        )}
+      
     </div>
   );
 }

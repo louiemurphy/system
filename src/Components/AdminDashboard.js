@@ -1,70 +1,222 @@
 import React, { useState, useEffect } from 'react';
-import './AdminDashboard.css'; // Import the CSS for styling
+import './AdminDashboard.css';
 
+// Sidebar Component
+function Sidebar() {
+    return (
+        <div className="sidebar2">
+            <h3>Menu</h3>
+            <ul>
+                <li>Dashboard</li>
+                <li>Requests</li>
+                <li>Workload</li>
+                <li>Settings</li>
+            </ul>
+        </div>
+    );
+}
+
+// Header Component
+function HeaderSection({ requests }) {
+    return (
+        <header className="header-section2">
+            <div className="header-content2">
+                <div className="header-left2">
+                    <h1>TECHNICAL SUPPORT GROUP</h1>
+                </div>
+                <div className="header-right2">
+                    <p>Last Request Added: {requests[requests.length - 1]?.timestamp || 'N/A'}</p>
+                </div>
+            </div>
+        </header>
+    );
+}
+
+// Status Summary Component
+function StatusSummary({ requests }) {
+    const total = requests.length;
+    const newRequests = requests.filter(request => request.status === 0).length;
+    const unassigned = requests.filter(request => !request.assignedTo).length;
+    const open = requests.filter(request => request.status === 1).length;
+    const closed = requests.filter(request => request.status === 2).length;
+
+    return (
+        <div className="stat-container2">
+            <div className="stat-box2">
+                <span className="label">TOTAL</span>
+                <span className="value">{total}</span>
+            </div>
+            <div className="stat-box2">
+                <span className="label">NEW</span>
+                <span className="value">{newRequests}</span>
+            </div>
+            <div className="stat-box2">
+                <span className="label">UNASSIGNED</span>
+                <span className="value">{unassigned}</span>
+            </div>
+            <div className="stat-box2">
+                <span className="label">OPEN</span>
+                <span className="value">{open}</span>
+            </div>
+            <div className="stat-box2">
+                <span className="label">CLOSED</span>
+                <span className="value">{closed}</span>
+            </div>
+        </div>
+    );
+}
+
+
+// Request List Component
+function RequestList({ requests, handleStatusChange, openOverlay, openModal, currentPage, paginate, requestsPerPage }) {
+    const indexOfLastRequest = currentPage * requestsPerPage;
+    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+    const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
+    const totalPages = Math.ceil(requests.length / requestsPerPage);
+
+    return (
+        <div className="request-list2">
+            <div className="search-bar2">
+                <input type="text" placeholder="Search..." />
+            </div>
+            <table className="request-table2">
+                <thead>
+                    <tr>
+                        <th>REQID</th>
+                        <th>TIMESTAMP</th>
+                        <th>PROJECT TITLE</th>
+                        <th>ASSIGNED TO</th>
+                        <th>STATUS</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {currentRequests.map((request) => (
+                        <tr key={request._id} onClick={() => openModal(request)}>
+                            <td>{request.referenceNumber}</td>
+                            <td>{request.timestamp}</td>
+                            <td>{request.projectTitle}</td>
+                            <td>{request.assignedTo || 'Unassigned'}</td>
+                            <td>
+                                <select
+                                    value={request.status}
+                                    onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
+                                    onClick={(e) => e.stopPropagation()} // Prevent row click when changing status
+                                    disabled={request.status === 2}
+                                >
+                                    <option value={0}>Pending</option>
+                                    <option value={1}>Ongoing</option>
+                                    <option value={2}>Completed</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button
+                                    className="assign-button2"
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent row click when assigning
+                                        openOverlay(request);
+                                    }}
+                                >
+                                    Assign
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div className="pagination2">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => paginate(index + 1)}
+                        className={currentPage === index + 1 ? 'active2' : ''}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+// Workload Section Component
+function Workload({ teamMembers }) {
+    return (
+        <div className="workload-section2">
+            <h3 className="workload-header2">WORKLOAD</h3>
+            {teamMembers.map((member, index) => {
+                // Split the name into an array of words
+                const nameParts = member.split(' ');
+
+                // Use the first letter of the first name and check if there's a second part (like a last name)
+                const initials = nameParts[0][0] + (nameParts[1] ? nameParts[1][0] : '');
+
+                return (
+                    <div key={index} className="workload-profile2">
+                        <div className="profile-pic-placeholder2">
+                            {initials}
+                        </div>
+                        <div className="profile-details2">
+                            <p>{member}</p>
+                            <div className="progress-bar2">
+                                <div className="progress-bar-complete2" style={{ width: '70%' }}></div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+// Main AdminDashboard Component
 function AdminDashboard() {
-    const [requests, setRequests] = useState([]); // State for storing requests
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null); // Error state
-    const [overlayVisible, setOverlayVisible] = useState(false); // Overlay visibility state
-    const [selectedRequest, setSelectedRequest] = useState(null); // State to store the selected request
-    const [selectedTeamMember, setSelectedTeamMember] = useState(''); // State for the selected team member
-    const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
-    const [currentPage, setCurrentPage] = useState(1); // Track current page for pagination
-    const requestsPerPage = 5; // Number of requests per page
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState(null);
+    const [selectedTeamMember, setSelectedTeamMember] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const requestsPerPage = 5;
 
-    const statusOptions = [
-        { value: 0, label: 'Pending' },
-        { value: 1, label: 'Ongoing' },
-        { value: 2, label: 'Completed' }
-    ]; // Status options
+    const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata', 'Tristan Chua', 'Jay-R'];
 
-    const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata']; // Team members
-
-    // Fetch requests from the backend
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/requests', {
-                    mode: 'cors', // Ensure CORS is handled
-                });
+                const response = await fetch('http://localhost:5000/api/requests', { mode: 'cors' });
                 if (!response.ok) {
                     throw new Error('Failed to fetch requests');
                 }
                 const data = await response.json();
-                setRequests(data); // Update state with fetched requests
-                setLoading(false); // Set loading to false
+                setRequests(data);
+                setLoading(false);
             } catch (err) {
-                setError(err.message); // Set error message
-                setLoading(false); // Stop loading in case of error
+                setError(err.message);
+                setLoading(false);
             }
         };
 
-        fetchRequests(); // Fetch requests on component mount
+        fetchRequests();
     }, []);
-
-    // Pagination logic
-    const indexOfLastRequest = currentPage * requestsPerPage;
-    const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-    const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
-
-    const totalPages = Math.ceil(requests.length / requestsPerPage);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Function to open the overlay and set the selected request
     const openOverlay = (request) => {
-        setSelectedRequest(request); // Set the request being assigned
-        setOverlayVisible(true); // Show overlay
+        setSelectedRequest(request);
+        setOverlayVisible(true);
     };
 
-    // Function to close the overlay
     const closeOverlay = () => {
-        setOverlayVisible(false); // Hide overlay
-        setSelectedRequest(null); // Reset the selected request
-        setSelectedTeamMember(''); // Reset the team member selection
+        setOverlayVisible(false);
+        setSelectedRequest(null);
+        setSelectedTeamMember('');
     };
 
-    // Function to handle saving the assignment
     const handleSave = async () => {
         if (selectedTeamMember) {
             const updatedRequests = requests.map((request) =>
@@ -84,29 +236,26 @@ function AdminDashboard() {
                 if (!response.ok) {
                     throw new Error('Failed to update request on the server');
                 }
+
+                closeOverlay();
             } catch (err) {
                 console.error('Error updating request:', err);
             }
-
-            closeOverlay(); // Close the overlay after saving
         } else {
             alert('Please select a team member!');
         }
     };
 
-    // Function to handle updating the status
     const handleStatusChange = async (requestId, newStatus) => {
         try {
             const updatedRequests = requests.map((request) =>
                 request._id === requestId ? { ...request, status: newStatus } : request
             );
-            setRequests(updatedRequests);  // This updates the frontend state
+            setRequests(updatedRequests);
 
             const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus }),
             });
 
@@ -118,188 +267,117 @@ function AdminDashboard() {
         }
     };
 
-    // Function to open the modal with request details
     const openModal = (request) => {
-        setSelectedRequest(request);  // Set the request for modal
-        setModalVisible(true);  // Show modal
+        console.log(request); // Debug to ensure correct data is logged
+        setSelectedRequest(request);
+        setModalVisible(true);
     };
 
-    // Function to close the modal
     const closeModal = () => {
-        setModalVisible(false);  // Hide modal
-        setSelectedRequest(null);  // Reset the selected request
+        setModalVisible(false);
+        setSelectedRequest(null);
     };
 
     if (loading) {
-        return <div>Loading requests...</div>;  // Show loading state
+        return <div>Loading requests...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>;  // Show error message if fetch fails
+        return <div>Error: {error}</div>;
     }
 
     return (
-        <div className="dashboard-container">
-            {/* Sidebar for navigation */}
-            <div className="sidebar">
-                <div className="sidebar-header">
-                    <h2>ADMIN DASHBOARD</h2>
-                </div>
-                <ul className="sidebar-menu">
-                    <li>Evaluator Profile</li>
-                    <li>List of Requests</li>
-                </ul>
+        <div className="admin-dashboard">
+            {/* Header Section */}
+            <div className="header-wrapper">
+                <HeaderSection requests={requests} />
             </div>
 
-            {/* Main content section */}
-            <div className="main-content">
-                {/* Top Section with Total Requests and Profiling */}
-                <div className="top-section">
-                    {/* Total Requests Section */}
-                    <div className="overview-panel">
-                        <h3>Total Requests</h3>
-                        <div className="overview-data">
-                            <p>Total Requests: {requests.length}</p>
-                            <p>Last Added Request: {requests[requests.length - 1]?.timestamp}</p>
+            {/* Status Summary Section */}
+            <div className="status-summary-wrapper">
+                <StatusSummary requests={requests} />
+            </div>
+
+            <div className="dashboard-container2">
+                {/* Sidebar */}
+                <div className="sidebar-wrapper">
+                    <Sidebar />
+                </div>
+
+                {/* Main Dashboard Content */}
+                <div className="main-content2">
+                    {/* Main Content Section */}
+                    <div className="content-section2">
+                        {/* Request List Section */}
+                        <div className="request-list-wrapper">
+                            <RequestList
+                                requests={requests}
+                                handleStatusChange={handleStatusChange}
+                                openOverlay={openOverlay}
+                                openModal={openModal} // Pass the openModal function
+                                currentPage={currentPage}
+                                paginate={paginate}
+                                requestsPerPage={requestsPerPage}
+                            />
+                        </div>
+
+                        {/* Workload Section */}
+                        <div className="workload-wrapper">
+                            <Workload teamMembers={teamMembers} />
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* Profiling Section */}
-                    <div className="profiling-panel">
-                        <h3>Profiling</h3>
-                        <div className="profiling-cards">
+            {/* Request Modal */}
+            {modalVisible && selectedRequest && (
+                <div className="modal2">
+                    <div className="modal-content2">
+                        <h3>Request Details</h3>
+                        <table className="modal-table2">
+                            <tbody>
+                                <tr><th>ID</th><td>{selectedRequest._id}</td></tr>
+                                <tr><th>Email</th><td>{selectedRequest.email}</td></tr>
+                                <tr><th>Name</th><td>{selectedRequest.name}</td></tr>
+                                <tr><th>Type of Client</th><td>{selectedRequest.typeOfClient}</td></tr>
+                                <tr><th>Classification</th><td>{selectedRequest.classification}</td></tr>
+                                <tr><th>Project Title</th><td>{selectedRequest.projectTitle}</td></tr>
+                                <tr><th>Philgeps Reference Number</th><td>{selectedRequest.philgepsReferenceNumber}</td></tr>
+                                <tr><th>Product Type</th><td>{selectedRequest.productType}</td></tr>
+                                <tr><th>Request Type</th><td>{selectedRequest.requestType}</td></tr>
+                                <tr><th>Date Needed</th><td>{selectedRequest.dateNeeded}</td></tr>
+                                <tr><th>Special Instructions</th><td>{selectedRequest.specialInstructions}</td></tr>
+                            </tbody>
+                        </table>
+                        <button onClick={closeModal} className="close-modal-btn">Close</button>
+                    </div>
+                </div>
+            )}
+
+            {/* Request Assignment Overlay */}
+            {overlayVisible && (
+                <div className="overlay2">
+                    <div className="lightbox-content2">
+                        <h3>Assign Request</h3>
+                        <label>Select Team Member:</label>
+                        <select
+                            value={selectedTeamMember}
+                            onChange={(e) => setSelectedTeamMember(e.target.value)}
+                        >
+                            <option value="" disabled>Select...</option>
                             {teamMembers.map((member, index) => (
-                                <div className="profile-card" key={index}>
-                                    <div className="profile-info">
-                                        <div className="profile-pic-placeholder">CC</div>
-                                        <div className="profile-details">
-                                            <p>{member}</p>
-                                            <div className="progress-bar">
-                                                <div className="progress-bar-complete" style={{ width: '70%' }}></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <option key={index} value={member}>
+                                    {member}
+                                </option>
                             ))}
+                        </select>
+                        <div className="lightbox-actions2">
+                            <button onClick={handleSave}>Save</button>
+                            <button onClick={closeOverlay}>Cancel</button>
                         </div>
                     </div>
                 </div>
-
-                {/* Table of requests with pagination */}
-                <div className="table-container">
-                    <h3>List of Requests</h3>
-                    <table className="request-table">
-                        <thead>
-                            <tr>
-                                <th>REQID</th>
-                                <th>TIMESTAMP</th>
-                                <th>PROJECT TITLE</th>
-                                <th>ASSIGNED TO</th>
-                                <th>STATUS</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentRequests.map((request) => (
-                                <tr key={request._id}>
-                                    <td onClick={() => openModal(request)}>{request.referenceNumber}</td>
-                                    <td onClick={() => openModal(request)}>{request.timestamp}</td>
-                                    <td onClick={() => openModal(request)}>{request.projectTitle}</td>
-                                    <td onClick={() => openModal(request)}>{request.assignedTo || 'Unassigned'}</td>
-                                    <td>
-                                        <select
-                                            value={request.status}
-                                            onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
-                                            disabled={request.status === 2}
-                                        >
-                                            {statusOptions.map((statusOption) => (
-                                                <option key={statusOption.value} value={statusOption.value}>
-                                                    {statusOption.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button
-                                            className="assign-button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                openOverlay(request);
-                                            }}
-                                        >
-                                            Assign
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-
-                    {/* Pagination controls */}
-                    <div className="pagination">
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => paginate(index + 1)}
-                                className={currentPage === index + 1 ? 'active' : ''}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Modal for request details */}
-                {modalVisible && selectedRequest && (
-                    <div className="modal">
-                        <div className="modal-content">
-                            <h3 className="modal-header">Request Details</h3>
-                            <table className="modal-table">
-                                <tbody>
-                                    <tr><th>ID</th><td>{selectedRequest._id}</td></tr>
-                                    <tr><th>Email</th><td>{selectedRequest.email}</td></tr>
-                                    <tr><th>Name</th><td>{selectedRequest.name}</td></tr>
-                                    <tr><th>Type of Client</th><td>{selectedRequest.typeOfClient}</td></tr>
-                                    <tr><th>Classification</th><td>{selectedRequest.classification}</td></tr>
-                                    <tr><th>Project Title</th><td>{selectedRequest.projectTitle}</td></tr>
-                                    <tr><th>Philgeps Reference Number</th><td>{selectedRequest.philgepsReferenceNumber}</td></tr>
-                                    <tr><th>Product Type</th><td>{selectedRequest.productType}</td></tr>
-                                    <tr><th>Request Type</th><td>{selectedRequest.requestType}</td></tr>
-                                    <tr><th>Date Needed</th><td>{selectedRequest.dateNeeded}</td></tr>
-                                    <tr><th>Special Instructions</th><td>{selectedRequest.specialInstructions}</td></tr>
-                                </tbody>
-                            </table>
-                            <button onClick={closeModal} className="close-modal-btn">Close</button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Overlay for assigning requests */}
-                {overlayVisible && (
-                    <div className="overlay">
-                        <div className="lightbox-content">
-                            <button className="close-overlay" onClick={closeOverlay}>×</button>
-                            <h3>Assign Request</h3>
-                            <label>Select Team Member:</label>
-                            <select
-                                value={selectedTeamMember}
-                                onChange={(e) => setSelectedTeamMember(e.target.value)}
-                            >
-                                <option value="" disabled>Select...</option>
-                                {teamMembers.map((member, index) => (
-                                    <option key={index} value={member}>
-                                        {member}
-                                    </option>
-                                ))}
-                            </select>
-                            <div className="lightbox-actions">
-                                <button onClick={handleSave}>Save</button>
-                                <button onClick={closeOverlay}>Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+            )}
         </div>
     );
 }

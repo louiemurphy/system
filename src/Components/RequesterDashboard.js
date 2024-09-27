@@ -9,6 +9,7 @@ function RequesterDashboard() {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const [selectedRequest, setSelectedRequest] = useState(null); // State for selected request
+  const [filterName, setFilterName] = useState(''); // State for filtering by name
 
   const [requestForm, setRequestForm] = useState({
     email: '',
@@ -41,7 +42,6 @@ function RequesterDashboard() {
         throw new Error('Failed to fetch requests');
       }
       const data = await response.json();
-      console.log(data);
       setRequests(data); // Set fetched requests in the state
       setLoading(false); // Set loading to false after data is fetched
     } catch (error) {
@@ -51,9 +51,9 @@ function RequesterDashboard() {
   };
 
   // Mock data for dropdowns
-  const names = ['Cerael Donggay', 'Andrew Donggay', 'Aries Paye', ]; // truncated for brevity
-  const productTypes = ['Solar Roof Top', 'Solar Lights', 'Solar Pump', ]; // truncated for brevity
-  const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', ]; // truncated for brevity
+  const names = ['Cerael Donggay', 'Andrew Donggay', 'Aries Paye']; // Usernames to filter by
+  const productTypes = ['Solar Roof Top', 'Solar Lights', 'Solar Pump']; // Example product types
+  const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation']; // Example request types
 
   // Toggle between dashboard and form view
   const handleNewRequestClick = () => setShowRequestForm((prev) => !prev);
@@ -92,24 +92,19 @@ function RequesterDashboard() {
     e.preventDefault();
     if (validateForm()) {
       try {
+        const formData = new FormData();
+        Object.keys(requestForm).forEach((key) => {
+          formData.append(key, requestForm[key]);
+        });
+        if (requestForm.files) {
+          for (let i = 0; i < requestForm.files.length; i++) {
+            formData.append('files', requestForm.files[i]);
+          }
+        }
+
         const response = await fetch('http://localhost:5000/api/requests', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: requestForm.email,
-            name: requestForm.name,
-            typeOfClient: requestForm.typeOfClient,
-            classification: requestForm.classification,
-            projectTitle: requestForm.projectTitle,
-            philgepsReferenceNumber: requestForm.philgepsReferenceNumber,
-            productType: requestForm.productType,
-            requestType: requestForm.requestType,
-            dateNeeded: requestForm.dateNeeded,
-            specialInstructions: requestForm.specialInstructions,
-            status: 0,
-          }),
+          body: formData,
         });
 
         const newRequest = await response.json();
@@ -149,6 +144,11 @@ function RequesterDashboard() {
     setSelectedRequest(null); // Deselect the request
   };
 
+  // Filter requests by selected name
+  const filteredRequests = filterName
+    ? requests.filter((request) => request.name === filterName)
+    : requests;
+
   // Show loading state
   if (loading) {
     return <div className="spinner">Loading...</div>;
@@ -178,17 +178,17 @@ function RequesterDashboard() {
               <div className="card">
                 <FaUsers className="card-icon" />
                 <h3>{requests.length}</h3>
-                <p>Total Requests</p>
+                <p>TOTAL REQUEST</p>
               </div>
               <div className="card">
                 <FaShoppingCart className="card-icon" />
                 <h3>{requests.filter(req => req.classification === 'Pending').length}</h3>
-                <p>Pending Requests</p>
+                <p>OPEN</p>
               </div>
               <div className="card">
                 <FaBox className="card-icon" />
                 <h3>{requests.filter(req => req.classification === 'Completed').length}</h3>
-                <p>Completed Requests</p>
+                <p>CLOSED</p>
               </div>
             </div>
 
@@ -197,11 +197,28 @@ function RequesterDashboard() {
             </button>
 
             <div className="table-container">
-              <h3>My Requests</h3>
+              <div className="table-header">
+                <h3 className='table2'>My Requests</h3>
+                {/* Name filter dropdown */}
+                <select
+                  className="name-filter"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                >
+                  <option value="">All Users</option>
+                  {names.map((name, index) => (
+                    <option key={index} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <table className="request-table">
                 <thead>
                   <tr>
                     <th>REQID</th>
+                    <th>Name</th>
                     <th>TIMESTAMP</th>
                     <th>PROJECT TITLE</th>
                     <th>ASSIGNED TO</th>
@@ -209,9 +226,10 @@ function RequesterDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {requests.map((request) => (
+                  {filteredRequests.map((request) => (
                     <tr key={request.id} onClick={() => handleRowClick(request)}>
                       <td>{request.referenceNumber}</td>
+                      <td>{request.name}</td>
                       <td>{request.timestamp}</td>
                       <td>{request.projectTitle}</td>
                       <td>{request.assignedTo || 'Unassigned'}</td>
@@ -220,7 +238,7 @@ function RequesterDashboard() {
                             : request.status === 2
                             ? "Complete"
                             : "Pending"}
-                            </td>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -229,236 +247,238 @@ function RequesterDashboard() {
           </div>
 
           {selectedRequest && (
-  <div className="modal">
-    <div className="modal-content">
-      <h3 className="modal-header">Request Details</h3>
-      <table className="modal-table">
-        <tbody>
-          <tr>
-            <th>ID</th>
-            <td>{selectedRequest.id}</td>
-          </tr>
-          <tr>
-            <th>Email:</th>
-            <td>{selectedRequest.email}</td>
-          </tr>
-          <tr>
-            <th>Name:</th>
-            <td>{selectedRequest.name}</td>
-          </tr>
-          <tr>
-            <th>Type of Client:</th>
-            <td>{selectedRequest.typeOfClient}</td>
-          </tr>
-          <tr>
-            <th>Classification:</th>
-            <td>{selectedRequest.classification}</td>
-          </tr>
-          <tr>
-            <th>Project Title:</th>
-            <td>{selectedRequest.projectTitle}</td>
-          </tr>
-          <tr>
-            <th>Philgeps Reference Number:</th>
-            <td>{selectedRequest.philgepsReferenceNumber}</td>
-          </tr>
-          <tr>
-            <th>Product Type:</th>
-            <td>{selectedRequest.productType}</td>
-          </tr>
-          <tr>
-            <th>Request Type:</th>
-            <td>{selectedRequest.requestType}</td>
-          </tr>
-          <tr>
-            <th>Date Needed:</th>
-            <td>{selectedRequest.dateNeeded}</td>
-          </tr>
-          <tr>
-            <th>Special Instructions:</th>
-            <td>{selectedRequest.specialInstructions}</td>
-          </tr>
-          <tr>
-            <th>Status:</th>
-            <td>
-              {selectedRequest.status === 1
-                ? "Ongoing"
-                : selectedRequest.status === 2
-                ? "Complete"
-                : "Pending"}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button onClick={closeModal} className="close-modal-btn">Close</button>
-    </div>
-  </div>
-)}
+            <div className="modal">
+              <div className="modal-content">
+                <h3 className="modal-header">Request Details</h3>
+                <table className="modal-table">
+                  <tbody>
+                    <tr>
+                      <th>ID</th>
+                      <td>{selectedRequest.id}</td>
+                    </tr>
+                    <tr>
+                      <th>Email:</th>
+                      <td>{selectedRequest.email}</td>
+                    </tr>
+                    <tr>
+                      <th>Name:</th>
+                      <td>{selectedRequest.name}</td>
+                    </tr>
+                    <tr>
+                      <th>Type of Client:</th>
+                      <td>{selectedRequest.typeOfClient}</td>
+                    </tr>
+                    <tr>
+                      <th>Classification:</th>
+                      <td>{selectedRequest.classification}</td>
+                    </tr>
+                    <tr>
+                      <th>Project Title:</th>
+                      <td>{selectedRequest.projectTitle}</td>
+                    </tr>
+                    <tr>
+                      <th>Philgeps Reference Number:</th>
+                      <td>{selectedRequest.philgepsReferenceNumber}</td>
+                    </tr>
+                    <tr>
+                      <th>Product Type:</th>
+                      <td>{selectedRequest.productType}</td>
+                    </tr>
+                    <tr>
+                      <th>Request Type:</th>
+                      <td>{selectedRequest.requestType}</td>
+                    </tr>
+                    <tr>
+                      <th>Date Needed:</th>
+                      <td>{selectedRequest.dateNeeded}</td>
+                    </tr>
+                    <tr>
+                      <th>Special Instructions:</th>
+                      <td>{selectedRequest.specialInstructions}</td>
+                    </tr>
+                    <tr>
+                      <th>Status:</th>
+                      <td>
+                        {selectedRequest.status === 1
+                          ? "Ongoing"
+                          : selectedRequest.status === 2
+                          ? "Complete"
+                          : "Pending"}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button onClick={closeModal} className="close-modal-btn">Close</button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
-        <section className="form-section">
-          <h2>Create New Request</h2>
-          <form onSubmit={handleSubmit} className="request-form">
-            <div className="form-row">
+        <section className="modal2">
+          <div className="modal2-content">
+            <h2>Create New Request</h2>
+            <form onSubmit={handleSubmit} className="request-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Email <span className="required">*</span></label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={requestForm.email}
+                    onChange={handleInputChange}
+                    placeholder="Your email"
+                    className={errors.email ? 'input-error' : ''}
+                  />
+                  {errors.email && <p className="error-text">{errors.email}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label>Your Name <span className="required">*</span></label>
+                  <select
+                    name="name"
+                    value={requestForm.name}
+                    onChange={handleInputChange}
+                    className={errors.name ? 'input-error' : ''}
+                  >
+                    <option value="">Select your name</option>
+                    {names.map((name, index) => (
+                      <option key={index} value={name}>{name}</option>
+                    ))}
+                  </select>
+                  {errors.name && <p className="error-text">{errors.name}</p>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Type of Client <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    name="typeOfClient"
+                    value={requestForm.typeOfClient}
+                    onChange={handleInputChange}
+                    placeholder="Type of client"
+                    className={errors.typeOfClient ? 'input-error' : ''}
+                  />
+                  {errors.typeOfClient && <p className="error-text">{errors.typeOfClient}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label>Classification <span className="required">*</span></label>
+                  <select
+                    name="classification"
+                    value={requestForm.classification}
+                    onChange={handleInputChange}
+                    className={errors.classification ? 'input-error' : ''}
+                  >
+                    <option value="">Select classification</option>
+                    <option value="Negotiable">Negotiable</option>
+                    <option value="Competitive">Competitive</option>
+                  </select>
+                  {errors.classification && <p className="error-text">{errors.classification}</p>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Project Title <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    name="projectTitle"
+                    value={requestForm.projectTitle}
+                    onChange={handleInputChange}
+                    placeholder="Project title"
+                    className={errors.projectTitle ? 'input-error' : ''}
+                  />
+                  {errors.projectTitle && <p className="error-text">{errors.projectTitle}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label>Philgeps Reference Number <span className="required">*</span></label>
+                  <input
+                    type="text"
+                    name="philgepsReferenceNumber"
+                    value={requestForm.philgepsReferenceNumber}
+                    onChange={handleInputChange}
+                    placeholder="Philgeps reference number or NA"
+                    className={errors.philgepsReferenceNumber ? 'input-error' : ''}
+                  />
+                  {errors.philgepsReferenceNumber && <p className="error-text">{errors.philgepsReferenceNumber}</p>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Product Type <span className="required">*</span></label>
+                  <select
+                    name="productType"
+                    value={requestForm.productType}
+                    onChange={handleInputChange}
+                    className={errors.productType ? 'input-error' : ''}
+                  >
+                    <option value="">Select product type</option>
+                    {productTypes.map((type, index) => (
+                      <option key={index} value={type}>{type}</option>
+                    ))}
+                  </select>
+                  {errors.productType && <p className="error-text">{errors.productType}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label>Request Type <span className="required">*</span></label>
+                  <select
+                    name="requestType"
+                    value={requestForm.requestType}
+                    onChange={handleInputChange}
+                    className={errors.requestType ? 'input-error' : ''}
+                  >
+                    <option value="">Select request type</option>
+                    {requestTypes.map((type, index) => (
+                      <option key={index} value={type}>{type}</option>
+                    ))}
+                  </select>
+                  {errors.requestType && <p className="error-text">{errors.requestType}</p>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Date Needed <span className="required">*</span></label>
+                  <input
+                    type="date"
+                    name="dateNeeded"
+                    value={requestForm.dateNeeded}
+                    onChange={handleInputChange}
+                    className={errors.dateNeeded ? 'input-error' : ''}
+                  />
+                  {errors.dateNeeded && <p className="error-text">{errors.dateNeeded}</p>}
+                </div>
+
+                <div className="form-group">
+                  <label>Special Instructions <span className="required">*</span></label>
+                  <textarea
+                    name="specialInstructions"
+                    value={requestForm.specialInstructions}
+                    onChange={handleInputChange}
+                    placeholder="Special instructions"
+                    className={errors.specialInstructions ? 'input-error' : ''}
+                  />
+                  {errors.specialInstructions && <p className="error-text">{errors.specialInstructions}</p>}
+                </div>
+              </div>
+
               <div className="form-group">
-                <label>Email <span className="required">*</span></label>
+                <label>Attach Files</label>
                 <input
-                  type="email"
-                  name="email"
-                  value={requestForm.email}
-                  onChange={handleInputChange}
-                  placeholder="Your email"
-                  className={errors.email ? 'input-error' : ''}
+                  type="file"
+                  name="files"
+                  onChange={handleFileChange}
+                  multiple
                 />
-                {errors.email && <p className="error-text">{errors.email}</p>}
               </div>
-
-              <div className="form-group">
-                <label>Your Name <span className="required">*</span></label>
-                <select
-                  name="name"
-                  value={requestForm.name}
-                  onChange={handleInputChange}
-                  className={errors.name ? 'input-error' : ''}
-                >
-                  <option value="">Select your name</option>
-                  {names.map((name, index) => (
-                    <option key={index} value={name}>{name}</option>
-                  ))}
-                </select>
-                {errors.name && <p className="error-text">{errors.name}</p>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Type of Client <span className="required">*</span></label>
-                <input
-                  type="text"
-                  name="typeOfClient"
-                  value={requestForm.typeOfClient}
-                  onChange={handleInputChange}
-                  placeholder="Type of client"
-                  className={errors.typeOfClient ? 'input-error' : ''}
-                />
-                {errors.typeOfClient && <p className="error-text">{errors.typeOfClient}</p>}
-              </div>
-
-              <div className="form-group">
-                <label>Classification <span className="required">*</span></label>
-                <select
-                  name="classification"
-                  value={requestForm.classification}
-                  onChange={handleInputChange}
-                  className={errors.classification ? 'input-error' : ''}
-                >
-                  <option value="">Select classification</option>
-                  <option value="Negotiable">Negotiable</option>
-                  <option value="Competitive">Competitive</option>
-                </select>
-                {errors.classification && <p className="error-text">{errors.classification}</p>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Project Title <span className="required">*</span></label>
-                <input
-                  type="text"
-                  name="projectTitle"
-                  value={requestForm.projectTitle}
-                  onChange={handleInputChange}
-                  placeholder="Project title"
-                  className={errors.projectTitle ? 'input-error' : ''}
-                />
-                {errors.projectTitle && <p className="error-text">{errors.projectTitle}</p>}
-              </div>
-
-              <div className="form-group">
-                <label>Philgeps Reference Number <span className="required">*</span></label>
-                <input
-                  type="text"
-                  name="philgepsReferenceNumber"
-                  value={requestForm.philgepsReferenceNumber}
-                  onChange={handleInputChange}
-                  placeholder="Philgeps reference number or NA"
-                  className={errors.philgepsReferenceNumber ? 'input-error' : ''}
-                />
-                {errors.philgepsReferenceNumber && <p className="error-text">{errors.philgepsReferenceNumber}</p>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Product Type <span className="required">*</span></label>
-                <select
-                  name="productType"
-                  value={requestForm.productType}
-                  onChange={handleInputChange}
-                  className={errors.productType ? 'input-error' : ''}
-                >
-                  <option value="">Select product type</option>
-                  {productTypes.map((type, index) => (
-                    <option key={index} value={type}>{type}</option>
-                  ))}
-                </select>
-                {errors.productType && <p className="error-text">{errors.productType}</p>}
-              </div>
-
-              <div className="form-group">
-                <label>Request Type <span className="required">*</span></label>
-                <select
-                  name="requestType"
-                  value={requestForm.requestType}
-                  onChange={handleInputChange}
-                  className={errors.requestType ? 'input-error' : ''}
-                >
-                  <option value="">Select request type</option>
-                  {requestTypes.map((type, index) => (
-                    <option key={index} value={type}>{type}</option>
-                  ))}
-                </select>
-                {errors.requestType && <p className="error-text">{errors.requestType}</p>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Date Needed <span className="required">*</span></label>
-                <input
-                  type="date"
-                  name="dateNeeded"
-                  value={requestForm.dateNeeded}
-                  onChange={handleInputChange}
-                  className={errors.dateNeeded ? 'input-error' : ''}
-                />
-                {errors.dateNeeded && <p className="error-text">{errors.dateNeeded}</p>}
-              </div>
-
-              <div className="form-group">
-                <label>Special Instructions <span className="required">*</span></label>
-                <textarea
-                  name="specialInstructions"
-                  value={requestForm.specialInstructions}
-                  onChange={handleInputChange}
-                  placeholder="Special instructions"
-                  className={errors.specialInstructions ? 'input-error' : ''}
-                />
-                {errors.specialInstructions && <p className="error-text">{errors.specialInstructions}</p>}
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Attach Files</label>
-              <input
-                type="file"
-                name="files"
-                onChange={handleFileChange}
-                multiple
-              />
-            </div>
-            <button type="submit" className="submit-btn">Submit Request</button>
-          </form>
+              <button type="submit" className="submit-btn">Submit Request</button>
+            </form>
+          </div>
         </section>
       )}
     </div>
