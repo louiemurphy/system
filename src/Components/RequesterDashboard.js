@@ -23,7 +23,6 @@ function RequesterDashboard() {
     dateNeeded: '',
     specialInstructions: '',
     status: 0,
-    files: null,
   });
 
   const [errors, setErrors] = useState({}); // To store form errors
@@ -31,6 +30,7 @@ function RequesterDashboard() {
   // Fetch all requests when the component mounts
   useEffect(() => {
     fetchRequests();
+    loadRequestsFromLocalStorage();
   }, []);
 
   // Fetch requests from the backend
@@ -43,11 +43,24 @@ function RequesterDashboard() {
       }
       const data = await response.json();
       setRequests(data); // Set fetched requests in the state
+      saveRequestsToLocalStorage(data); // Save fetched requests to local storage
       setLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       setError(error.message); // Set error if there's a problem with the fetch
       setLoading(false); // Stop loading on error
     }
+  };
+
+  // Load requests from local storage
+  const loadRequestsFromLocalStorage = () => {
+    const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
+    setRequests(storedRequests);
+    setLoading(false); // Stop loading after loading from local storage
+  };
+
+  // Save requests to local storage
+  const saveRequestsToLocalStorage = (requestsToSave) => {
+    localStorage.setItem('requests', JSON.stringify(requestsToSave));
   };
 
   // Mock data for dropdowns
@@ -62,11 +75,6 @@ function RequesterDashboard() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setRequestForm((prevForm) => ({ ...prevForm, [name]: value }));
-  };
-
-  // Handle file input changes
-  const handleFileChange = (e) => {
-    setRequestForm((prevForm) => ({ ...prevForm, files: e.target.files }));
   };
 
   // Form validation
@@ -92,23 +100,30 @@ function RequesterDashboard() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const formData = new FormData();
-        Object.keys(requestForm).forEach((key) => {
-          formData.append(key, requestForm[key]);
-        });
-        if (requestForm.files) {
-          for (let i = 0; i < requestForm.files.length; i++) {
-            formData.append('files', requestForm.files[i]);
-          }
-        }
-
         const response = await fetch('http://localhost:5000/api/requests', {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: requestForm.email,
+            name: requestForm.name,
+            typeOfClient: requestForm.typeOfClient,
+            classification: requestForm.classification,
+            projectTitle: requestForm.projectTitle,
+            philgepsReferenceNumber: requestForm.philgepsReferenceNumber,
+            productType: requestForm.productType,
+            requestType: requestForm.requestType,
+            dateNeeded: requestForm.dateNeeded,
+            specialInstructions: requestForm.specialInstructions,
+            status: 0,
+          }),
         });
 
         const newRequest = await response.json();
-        setRequests((prevRequests) => [...prevRequests, newRequest]); // Add new request to the state
+        const updatedRequests = [...requests, newRequest]; // Add new request to the state
+        setRequests(updatedRequests);
+        saveRequestsToLocalStorage(updatedRequests); // Update local storage with the new request
 
         // Reset form after submission
         setRequestForm({
@@ -123,7 +138,6 @@ function RequesterDashboard() {
           dateNeeded: '',
           specialInstructions: '',
           status: 0,
-          files: null,
         });
 
         setShowRequestForm(false); // Switch back to dashboard view after submission
@@ -142,6 +156,37 @@ function RequesterDashboard() {
   // Close modal
   const closeModal = () => {
     setSelectedRequest(null); // Deselect the request
+  };
+
+  // Download file using Blob
+  const downloadFile = async (fileUrl, fileName) => {
+    try {
+      const response = await fetch(`http://localhost:5000${fileUrl}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/pdf', // Adjust this according to your file type
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      const blob = await response.blob(); // Get the response as a Blob
+      const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL
+
+      // Create an anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', fileName); // Set the download attribute with the file name
+      document.body.appendChild(link);
+      link.click(); // Programmatically click the link to download the file
+      link.remove(); // Clean up the link
+
+      window.URL.revokeObjectURL(downloadUrl); // Free up memory after download
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
   };
 
   // Filter requests by selected name
@@ -296,6 +341,17 @@ function RequesterDashboard() {
                       <th>Special Instructions:</th>
                       <td>{selectedRequest.specialInstructions}</td>
                     </tr>
+                    {/* New: Show download link if a file has been uploaded */}
+                    {selectedRequest.fileUrl && (
+                      <tr>
+                        <th>Download Evaluation:</th>
+                        <td>
+                          <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
+                            Download {selectedRequest.fileName || 'evaluation'}
+                          </button>
+                        </td>
+                      </tr>
+                    )}
                     <tr>
                       <th>Status:</th>
                       <td>
@@ -465,16 +521,7 @@ function RequesterDashboard() {
                   />
                   {errors.specialInstructions && <p className="error-text">{errors.specialInstructions}</p>}
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label>Attach Files</label>
-                <input
-                  type="file"
-                  name="files"
-                  onChange={handleFileChange}
-                  multiple
-                />
+                
               </div>
               <button type="submit" className="submit-btn">Submit Request</button>
             </form>
