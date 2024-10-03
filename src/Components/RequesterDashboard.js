@@ -146,7 +146,7 @@ function RequesterDashboard() {
   const fetchRequests = useCallback(async () => {
     try {
       setLoading(true); // Set loading state to true
-      const response = await fetch('https://backend-test-u9zl.onrender.com0/api/requests');
+      const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests');
       
       if (!response.ok) {
         throw new Error('Failed to fetch requests');
