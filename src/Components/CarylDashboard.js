@@ -14,7 +14,7 @@ function CarylDashboard() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/requests?assignedTo=${teamMember}`);
+        const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests?assignedTo=${teamMember}`);
         if (!response.ok) throw new Error('Failed to fetch requests');
         const data = await response.json();
         setRequests(data);
@@ -36,7 +36,7 @@ function CarylDashboard() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
+      const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
@@ -78,7 +78,7 @@ function CarylDashboard() {
       formData.append('requestId', selectedRequest._id);
   
       try {
-        const response = await fetch('http://localhost:5000/api/upload', {
+        const response = await fetch('https://backend-test-u9zl.onrender.com/api/upload', {
           method: 'POST',
           body: formData,  // Note that this sends the file as 'multipart/form-data'
         });
@@ -108,7 +108,7 @@ function CarylDashboard() {
   // Download file using Blob
   const downloadFile = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`http://localhost:5000${fileUrl}`, {
+      const response = await fetch(`https://backend-test-u9zl.onrender.com${fileUrl}`, {
         method: 'GET',
       });
 
