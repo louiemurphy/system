@@ -30,6 +30,11 @@ function CarylDashboard() {
 
   // Handle status update of requests
   const handleStatusChange = async (requestId, newStatus) => {
+    if (newStatus === 2 && !selectedRequest.fileUrl) {
+      alert('You cannot mark this request as completed without an evaluator file.');
+      return; // Exit early if evaluator file is not uploaded
+    }
+
     try {
       const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
         method: 'PUT',
@@ -99,10 +104,35 @@ function CarylDashboard() {
       alert('Please select a file to upload.');
     }
   };
-  
-  
-  
-  
+
+  // Download file using Blob
+  const downloadFile = async (fileUrl, fileName) => {
+    try {
+      const response = await fetch(`http://localhost:5000${fileUrl}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      const blob = await response.blob(); // Get the response as a Blob
+      const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL
+
+      // Create an anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', fileName); // Set the download attribute with the file name
+      document.body.appendChild(link);
+      link.click(); // Programmatically click the link to download the file
+      link.remove(); // Clean up the link
+
+      window.URL.revokeObjectURL(downloadUrl); // Free up memory after download
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      alert(`Download failed: ${error.message}`);
+    }
+  };
 
   // Loading state while fetching requests
   if (loading) return <div className="loading">Loading requests...</div>;
@@ -167,7 +197,7 @@ function CarylDashboard() {
                     >
                       <option value={0}>Pending</option>
                       <option value={1}>Ongoing</option>
-                      <option value={2}>Completed</option>
+                      <option value={2} disabled={!req.fileUrl}>Completed</option> {/* Disable if no file uploaded */}
                     </select>
                   </td>
                 </tr>
@@ -232,14 +262,17 @@ function CarylDashboard() {
                   <th>Special Instructions</th>
                   <td>{selectedRequest.specialInstructions}</td>
                 </tr>
-                <tr>
-                  <th>Upload Evaluation</th>
-                  <td>
-                    <input type="file" onChange={handleFileChange} />
-                    <button onClick={handleFileUpload}>Upload</button>
-                    {uploadedFile && <p>File: {uploadedFile.name}</p>}
-                  </td>
-                </tr>
+                {/* From Requester Section */}
+                {selectedRequest.requesterFileUrl && (
+                  <tr>
+                    <th>From Requester:</th>
+                    <td>
+                      <button onClick={() => downloadFile(selectedRequest.requesterFileUrl, selectedRequest.requesterFileName)}>
+                        Download {selectedRequest.requesterFileName || 'file'}
+                      </button>
+                    </td>
+                  </tr>
+                )}
                 {selectedRequest.fileUrl && (
                   <tr>
                     <th>Download Evaluation</th>
@@ -250,6 +283,14 @@ function CarylDashboard() {
                     </td>
                   </tr>
                 )}
+                <tr>
+                  <th>Upload Evaluation</th>
+                  <td>
+                    <input type="file" onChange={handleFileChange} />
+                    <button onClick={handleFileUpload}>Upload</button>
+                    {uploadedFile && <p>File: {uploadedFile.name}</p>}
+                  </td>
+                </tr>
               </tbody>
             </table>
             <button onClick={closeModal} className="close-modal-btn">Close</button>

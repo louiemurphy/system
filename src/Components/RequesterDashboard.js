@@ -11,6 +11,8 @@ function RequesterDashboard() {
   const [selectedRequest, setSelectedRequest] = useState(null); // State for selected request
   const [filterName, setFilterName] = useState(''); // State for filtering by name
   const [selectedFile, setSelectedFile] = useState(null); // File upload state
+  const [currentPage, setCurrentPage] = useState(1); // Pagination state
+  const requestsPerPage = 7; // Number of requests per page
 
   const [requestForm, setRequestForm] = useState({
     email: '',
@@ -28,13 +30,125 @@ function RequesterDashboard() {
 
   const [errors, setErrors] = useState({}); // To store form errors
 
+  // Mock data for dropdowns
+  const names = [ 'Cerael Donggay', 
+    'Andrew Donggay', 
+    'Aries Paye', 
+    'Melody Nazareno',
+    'Roy Junsay',
+    'Mark Sorreda',
+    'Zir Madridano',
+    'Rizaldy Baldemor',
+    'Giovanne Bongga',
+    'Joyaneil Lumampao',
+    'Michael Bughanoy',
+    'Anthony De Gracia',
+    'Alex Cabisada',
+    'Matt Caulin',
+    'Richard Cagalawan',
+    'William Jover',
+    'Paul Shane Marte',
+    'Marvin Oteda',
+    'Julius Tan',
+    'Joren Bangquiao',
+    'Diane Yumul',
+    'Kenneth Fabroa',
+    'Mylene Agurob',
+    'BIDDING TEAM - Kia',
+    'Novi Generalao',
+    'BIDDING TEAM - Cora',
+    'BIDDING TEAM - Jan',
+    'BIDDING TEAM - Kaye',
+    'Marketing',
+    'Freelance',
+    'Ronie Serna',
+    'Andy Bello',
+    'Simon Paul Molina',
+    'Ralph Reginald Hallera Yee',
+    'Cesar Samboy Sassan']; // List of names (same as above)
+
+  const productTypes = ['Solar Roof Top',
+    'Solar Lights',
+    'Solar Pump',
+    'AC Lights',
+    'Diesel Generator',
+    'Transformer',
+    'Electric Vehicle',
+    'Floating Solar',
+    'Micro Grid',
+    'Solar Road Stud',
+    'Georesistivity',
+    'Drilling',
+    'Prefab Container',
+    'Command Center',
+    'ICT Products',
+    'Energy Audit',
+    'Building Construction',
+    'Road Concreting',
+    'Drone',
+    'Agricultural Machinery',
+    'Ice Machine',
+    'Riprap',
+    'Retaining Wall',
+    'Industrial Pumps',
+    'Building Wiring Installation',
+    'Solar CCTV',
+    'Solar Farm',
+    'Solar Insect Traps',
+    'Solar Water Heater',
+    'Concrete Water Tank',
+    'Solar Waiting Shed',
+    'Solar Prefab Container',
+    'Structured Cabling',
+    'Water Desalination',
+    'Steel Water Tank',
+    'Hydroponics',
+    'HVAC',
+    'Piping System',
+    'Water System',
+    'Conveyor System',
+    'Solar Generator',
+    'Solar Water Purifier',
+    'Heavy Equipment',
+    'Traffic Light',
+    'AC CCTV',
+    'Solar Aerator',
+    'AC Aerator']; // List of product types (same as above)
+
+  const requestTypes = ['Site Survey',
+    'Project Evaluation',
+    'Request for Quotation',
+    'Proposal Approval',
+    'Design and Estimates',
+    'Program of Works',
+    'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works',
+    'Project Evaluation, Request for Quotation',
+    'Design and Estimates, Program of Works',
+    'Request for Quotation, Design and Estimates',
+    'Project Evaluation, Request for Quotation, Design and Estimates',
+    'Proposal Approval, Design and Estimates, Detailed Estimates of the Project',
+    'Request for Quotation, Design and Estimates, Product Presentation',
+    'Product Presentation',
+    'PVSYST Report',
+    'Electrical Diagram',
+    'Pricelist',
+    'Detailed Cost Estimates of the Project - total amount should match the selling price',
+    'Project Evaluation, Design and Estimates',
+    'Proposal Approval, Design and Estimates',
+    'Roofing Layout',
+    'Roofing Layout, Electrical Diagram',
+    'Schematic Diagram for Solar',
+    'Load Profiling',
+    'Data Sheet or Specification']; // List of request types (same as above)
+
+  const typeOfClient = ['Private', 'Government'];
+  
   // Fetch all requests when the component mounts
   useEffect(() => {
     fetchRequests();
     loadRequestsFromLocalStorage();
   }, []);
 
-  // Fetch requests from the backend
   const fetchRequests = async () => {
     try {
       setLoading(true); // Set loading state
@@ -52,38 +166,27 @@ function RequesterDashboard() {
     }
   };
 
-  // Load requests from local storage
   const loadRequestsFromLocalStorage = () => {
     const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
     setRequests(storedRequests);
     setLoading(false); // Stop loading after loading from local storage
   };
 
-  // Save requests to local storage
   const saveRequestsToLocalStorage = (requestsToSave) => {
     localStorage.setItem('requests', JSON.stringify(requestsToSave));
   };
 
-  // Mock data for dropdowns
-  const names = ['Cerael Donggay', 'Andrew Donggay', 'Aries Paye']; // Usernames to filter by
-  const productTypes = ['Solar Roof Top', 'Solar Lights', 'Solar Pump']; // Example product types
-  const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation']; // Example request types
-
-  // Toggle between dashboard and form view
   const handleNewRequestClick = () => setShowRequestForm((prev) => !prev);
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setRequestForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  // Handle file input changes
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
-  // Form validation
   const validateForm = () => {
     const newErrors = {};
     if (!requestForm.email) newErrors.email = 'This is a required question';
@@ -103,7 +206,7 @@ function RequesterDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (validateForm()) {
       try {
         // Step 1: Create the request first (without file data)
@@ -112,33 +215,41 @@ function RequesterDashboard() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to create request');
         }
-
+  
         const newRequest = await response.json(); // Get the newly created request
-
-        // Step 2: Upload the file if a file is selected (but it will not be shown in "My Requests")
+  
+        // Step 2: Upload the file if a file is selected
         if (selectedFile) {
           const formData = new FormData();
           formData.append('file', selectedFile); // Attach the selected file
           formData.append('requestId', newRequest._id); // Attach the newly created request ID
-
-          const uploadResponse = await fetch('http://localhost:5000/api/upload', {
+  
+          const uploadResponse = await fetch('http://localhost:5000/api/requester/upload', {
             method: 'POST',
             body: formData, // Send the file and requestId as FormData
           });
-
+  
           if (!uploadResponse.ok) {
             throw new Error('File upload failed');
           }
+  
+          // Fetch the updated request data after file upload
+          const updatedRequest = await uploadResponse.json();
+  
+          // Manually update the request in the state
+          setRequests((prevRequests) =>
+            prevRequests.map((request) =>
+              request._id === updatedRequest._id ? updatedRequest : request
+            )
+          );
         }
-
+  
         // Reset the form after successful submission
         resetForm();
-
-        // Optionally notify the user that the request was created
         alert('Request submitted successfully.');
       } catch (error) {
         console.error('Error submitting the request:', error);
@@ -146,7 +257,6 @@ function RequesterDashboard() {
     }
   };
 
-  // Reset form
   const resetForm = () => {
     setRequestForm({
       email: '',
@@ -164,17 +274,14 @@ function RequesterDashboard() {
     setSelectedFile(null); // Clear selected file
   };
 
-  // Handle row click to show details
   const handleRowClick = (request) => {
     setSelectedRequest(request); // Set the selected request to be shown in the modal
   };
 
-  // Close modal
   const closeModal = () => {
     setSelectedRequest(null); // Deselect the request
   };
 
-  // Download file using Blob
   const downloadFile = async (fileUrl, fileName) => {
     try {
       const response = await fetch(`http://localhost:5000${fileUrl}`, {
@@ -209,6 +316,21 @@ function RequesterDashboard() {
   const filteredRequests = filterName
     ? requests.filter((request) => request.name === filterName)
     : requests;
+
+  // Pagination logic
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+
+  // Handle page changes
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
 
   // Show loading state
   if (loading) {
@@ -287,23 +409,31 @@ function RequesterDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRequests.map((request) => (
+                  {currentRequests.map((request) => (
                     <tr key={request._id} onClick={() => handleRowClick(request)}>
                       <td>{request.referenceNumber}</td>
                       <td>{request.name}</td>
                       <td>{request.timestamp}</td>
                       <td>{request.projectTitle}</td>
                       <td>{request.assignedTo || 'Unassigned'}</td>
-                      <td>{request.status === 1
-                            ? "Ongoing"
-                            : request.status === 2
-                            ? "Complete"
-                            : "Pending"}
-                      </td>
+                      <td>{request.status === 1 ? 'Ongoing' : request.status === 2 ? 'Complete' : 'Pending'}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              {/* Pagination Controls */}
+              <div className="pagination-controls">
+                <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+                  &lt; Previous
+                </button>
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                  Next &gt;
+                </button>
+              </div>
             </div>
           </div>
 
@@ -357,25 +487,39 @@ function RequesterDashboard() {
                       <th>Special Instructions:</th>
                       <td>{selectedRequest.specialInstructions}</td>
                     </tr>
-                    {/* New: Show download link if a file has been uploaded */}
-                    {selectedRequest.fileUrl && (
+
+                    {/* Files From Requester Section */}
+                    {selectedRequest.requesterFileUrl && (
                       <tr>
-                        <th>Download Evaluation:</th>
+                        <th>From Requester:</th>
                         <td>
-                          <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
-                            Download {selectedRequest.fileName || 'evaluation'}
+                          <button onClick={() => downloadFile(selectedRequest.requesterFileUrl, selectedRequest.requesterFileName)}>
+                            Download {selectedRequest.requesterFileName || 'file'}
                           </button>
                         </td>
                       </tr>
                     )}
+
+                    {/* Files From Evaluator Section */}
+                    {selectedRequest.fileUrl && (
+                      <tr>
+                        <th>Download Evaluator:</th>
+                        <td>
+                          <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
+                            Download {selectedRequest.fileName || 'evaluator file'}
+                          </button>
+                        </td>
+                      </tr>
+                    )}
+
                     <tr>
                       <th>Status:</th>
                       <td>
                         {selectedRequest.status === 1
-                          ? "Ongoing"
+                          ? 'Ongoing'
                           : selectedRequest.status === 2
-                          ? "Complete"
-                          : "Pending"}
+                          ? 'Complete'
+                          : 'Pending'}
                       </td>
                     </tr>
                   </tbody>
@@ -388,7 +532,6 @@ function RequesterDashboard() {
       ) : (
         <section className="modal2">
           <div className="modal2-content">
-            <h2>Create New Request</h2>
             <form onSubmit={handleSubmit} className="request-form">
               <div className="form-row">
                 <div className="form-group">
@@ -424,14 +567,19 @@ function RequesterDashboard() {
               <div className="form-row">
                 <div className="form-group">
                   <label>Type of Client <span className="required">*</span></label>
-                  <input
-                    type="text"
+                  <select
                     name="typeOfClient"
                     value={requestForm.typeOfClient}
                     onChange={handleInputChange}
-                    placeholder="Type of client"
                     className={errors.typeOfClient ? 'input-error' : ''}
-                  />
+                  >
+                    <option value="">Select Type of Client</option>
+                    {typeOfClient.map((clientType, index) => (
+                      <option key={index} value={clientType}>
+                        {clientType}
+                      </option>
+                    ))}
+                  </select>
                   {errors.typeOfClient && <p className="error-text">{errors.typeOfClient}</p>}
                 </div>
 
@@ -453,7 +601,8 @@ function RequesterDashboard() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Project Title <span className="required">*</span></label>
+                  <label>Project Title or Client Name if private
+                    <span className="required">*</span></label>
                   <input
                     type="text"
                     name="projectTitle"
@@ -542,7 +691,7 @@ function RequesterDashboard() {
               {/* File upload input */}
               <div className="form-row">
                 <div className="form-group">
-                  <label>Upload File (Optional)</label>
+                  <label>Please upload useful files such as Drawing, Specs, Bid Docs, etc. (any files that would help in the assessment or any files related to the project)</label>
                   <input type="file" onChange={handleFileChange} />
                 </div>
               </div>

@@ -26,7 +26,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
@@ -74,8 +73,10 @@ const requestSchema = new mongoose.Schema({
   specialInstructions: String,
   assignedTo: String,
   status: { type: Number, default: 0 }, // Default to Pending
-  fileUrl: String,  // URL to the uploaded file
-  fileName: String   // Original file name
+  fileUrl: String,  // URL to the evaluator's uploaded file
+  fileName: String, // Original evaluator file name
+  requesterFileUrl: String,  // URL to the requester's uploaded file
+  requesterFileName: String  // Original requester file name
 });
 
 const Request = mongoose.model('Request', requestSchema);
@@ -167,7 +168,7 @@ app.delete("/api/requests/:id", async (req, res) => {
   }
 });
 
-// Existing file upload route
+// Existing file upload route for evaluator
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     console.log('No file received');
@@ -180,7 +181,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const requestId = req.body.requestId;
 
-    // Update the request with file path and file name
+    // Update the request with file path and file name for evaluator
     const updatedRequest = await Request.findByIdAndUpdate(
       requestId,
       { 
@@ -202,8 +203,8 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// File upload route
-app.post('/api/upload/file', upload.single('file'), async (req, res) => {
+// New File upload route for requester
+app.post('/api/requester/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
@@ -211,25 +212,28 @@ app.post('/api/upload/file', upload.single('file'), async (req, res) => {
   const filePath = `/uploads/${req.file.filename}`;
 
   try {
-    const newFileRecord = new FileModel({
-      filename: req.file.filename,
-      originalName: req.file.originalname,
-      fileSize: req.file.size,
-      filePath,
-    });
+    const requestId = req.body.requestId;
 
-    await newFileRecord.save(); // Save to the database
+    // Update the request with file path and file name for requester
+    const updatedRequest = await Request.findByIdAndUpdate(
+      requestId,
+      { 
+        requesterFileUrl: filePath,
+        requesterFileName: req.file.originalname 
+      },
+      { new: true }
+    );
+    
+    if (!updatedRequest) {
+      return res.status(404).json({ message: "Request not found" });
+    }
 
-    res.status(201).json({
-      message: "File uploaded successfully",
-      file: newFileRecord,
-    });
+    res.json(updatedRequest);
   } catch (error) {
-    console.error("Error saving file information:", error);
-    res.status(500).json({ message: "Error saving file information" });
+    console.error("Error uploading file:", error);
+    res.status(500).json({ message: "Error uploading file" });
   }
 });
-
 
 // File download route
 app.get('/api/download/:filename', (req, res) => {

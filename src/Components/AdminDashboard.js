@@ -8,9 +8,7 @@ function Sidebar() {
             <h3>Menu</h3>
             <ul>
                 <li>Dashboard</li>
-                <li>Requests</li>
-                <li>Workload</li>
-                <li>Settings</li>
+                <li> All Requests</li>
             </ul>
         </div>
     );
@@ -66,78 +64,132 @@ function StatusSummary({ requests }) {
     );
 }
 
-
-// Request List Component
-function RequestList({ requests, handleStatusChange, openOverlay, openModal, currentPage, paginate, requestsPerPage }) {
+// Request List Component with Pagination and Search Functionality
+function RequestList({
+    requests,
+    handleStatusChange,
+    openOverlay,
+    openModal,
+    currentPage,
+    paginate,
+    requestsPerPage,
+    searchQuery,
+    setSearchQuery,
+  }) {
+    const totalRequests = requests.length;
+    const totalPages = Math.ceil(totalRequests / requestsPerPage); // Total number of pages
+  
     const indexOfLastRequest = currentPage * requestsPerPage;
     const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-    const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
-    const totalPages = Math.ceil(requests.length / requestsPerPage);
 
+    // Memoize filtering and pagination
+    const filteredRequests = React.useMemo(() => {
+        return requests.filter((request) =>
+            request.projectTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            request.referenceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            request.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [requests, searchQuery]);
+
+    const currentRequests = React.useMemo(() => {
+        return filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+    }, [filteredRequests, indexOfFirstRequest, indexOfLastRequest]);
+  
+    const handleNextPage = () => {
+      if (currentPage < totalPages) {
+        paginate(currentPage + 1);
+      }
+    };
+  
+    const handlePreviousPage = () => {
+      if (currentPage > 1) {
+        paginate(currentPage - 1);
+      }
+    };
+  
     return (
-        <div className="request-list2">
-            <div className="search-bar2">
-                <input type="text" placeholder="Search..." />
+      <div className="request-list-container">
+        {/* Search bar for filtering requests */}
+        <div className="search-and-pagination-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search requests..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+  
+          {/* Pagination Info and Controls */}
+          <div className="pagination-controls">
+            <span className="pagination-info">
+              {currentPage}-{totalPages}
+            </span>
+            <div className="pagination-buttons">
+              <button
+                className="pagination-btn"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1} // Disable on the first page
+              >
+                &lt;
+              </button>
+              <button
+                className="pagination-btn"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages} // Disable on the last page
+              >
+                &gt;
+              </button>
             </div>
-            <table className="request-table2">
-                <thead>
-                    <tr>
-                        <th>REQID</th>
-                        <th>TIMESTAMP</th>
-                        <th>PROJECT TITLE</th>
-                        <th>ASSIGNED TO</th>
-                        <th>STATUS</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentRequests.map((request) => (
-                        <tr key={request._id} onClick={() => openModal(request)}>
-                            <td>{request.referenceNumber}</td>
-                            <td>{request.timestamp}</td>
-                            <td>{request.projectTitle}</td>
-                            <td>{request.assignedTo || 'Unassigned'}</td>
-                            <td>
-                                <select
-                                    value={request.status}
-                                    onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
-                                    onClick={(e) => e.stopPropagation()} // Prevent row click when changing status
-                                    disabled={request.status === 2}
-                                >
-                                    <option value={0}>Pending</option>
-                                    <option value={1}>Ongoing</option>
-                                    <option value={2}>Completed</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button
-                                    className="assign-button2"
-                                    onClick={(e) => {
-                                        e.stopPropagation(); // Prevent row click when assigning
-                                        openOverlay(request);
-                                    }}
-                                >
-                                    Assign
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {/* Pagination */}
-            <div className="pagination2">
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                        key={index + 1}
-                        onClick={() => paginate(index + 1)}
-                        className={currentPage === index + 1 ? 'active2' : ''}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-            </div>
+          </div>
         </div>
+  
+        <table className="request-table2">
+          <thead>
+            <tr>
+              <th>REQID</th>
+              <th>TIMESTAMP</th>
+              <th>PROJECT TITLE</th>
+              <th>ASSIGNED TO</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentRequests.map((request) => (
+              <tr key={request._id} onClick={() => openModal(request)}>
+                <td>{request.referenceNumber}</td>
+                <td>{request.timestamp}</td>
+                <td>{request.projectTitle}</td>
+                <td>{request.assignedTo || 'Unassigned'}</td>
+                <td>
+                  <select
+                    value={request.status}
+                    onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
+                    onClick={(e) => e.stopPropagation()} // Prevent row click when changing status
+                    disabled={request.status === 2}
+                  >
+                    <option value={0}>Pending</option>
+                    <option value={1}>Ongoing</option>
+                    <option value={2}>Completed</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="assign-button2"
+                    aria-label={`Assign request ${request.referenceNumber}`}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click when assigning
+                      openOverlay(request);
+                    }}
+                  >
+                    Assign
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
 }
 
@@ -147,17 +199,12 @@ function Workload({ teamMembers }) {
         <div className="workload-section2">
             <h3 className="workload-header2">WORKLOAD</h3>
             {teamMembers.map((member, index) => {
-                // Split the name into an array of words
                 const nameParts = member.split(' ');
-
-                // Use the first letter of the first name and check if there's a second part (like a last name)
                 const initials = nameParts[0][0] + (nameParts[1] ? nameParts[1][0] : '');
 
                 return (
                     <div key={index} className="workload-profile2">
-                        <div className="profile-pic-placeholder2">
-                            {initials}
-                        </div>
+                        <div className="profile-pic-placeholder2">{initials}</div>
                         <div className="profile-details2">
                             <p>{member}</p>
                             <div className="progress-bar2">
@@ -181,6 +228,7 @@ function AdminDashboard() {
     const [selectedTeamMember, setSelectedTeamMember] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState(''); // Search query state
     const requestsPerPage = 5;
 
     const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata', 'Tristan Chua', 'Jay-R'];
@@ -268,7 +316,6 @@ function AdminDashboard() {
     };
 
     const openModal = (request) => {
-        console.log(request); // Debug to ensure correct data is logged
         setSelectedRequest(request);
         setModalVisible(true);
     };
@@ -276,6 +323,36 @@ function AdminDashboard() {
     const closeModal = () => {
         setModalVisible(false);
         setSelectedRequest(null);
+    };
+
+    const downloadFile = async (fileUrl, fileName) => {
+        try {
+            const response = await fetch(`http://localhost:5000${fileUrl}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf', // Adjust this according to your file type
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+            }
+
+            const blob = await response.blob(); // Get the response as a Blob
+            const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL
+
+            // Create an anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', fileName); // Set the download attribute with the file name
+            document.body.appendChild(link);
+            link.click(); // Programmatically click the link to download the file
+            link.remove(); // Clean up the link
+
+            window.URL.revokeObjectURL(downloadUrl); // Free up memory after download
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
     };
 
     if (loading) {
@@ -309,17 +386,20 @@ function AdminDashboard() {
                     {/* Main Content Section */}
                     <div className="content-section2">
                         {/* Request List Section */}
-                        <div className="request-list-wrapper">
-                            <RequestList
-                                requests={requests}
-                                handleStatusChange={handleStatusChange}
-                                openOverlay={openOverlay}
-                                openModal={openModal} // Pass the openModal function
-                                currentPage={currentPage}
-                                paginate={paginate}
-                                requestsPerPage={requestsPerPage}
-                            />
-                        </div>
+<div className="request-list-wrapper">
+    <RequestList
+        requests={requests} // Pass raw requests
+        handleStatusChange={handleStatusChange}
+        openOverlay={openOverlay}
+        openModal={openModal} // Pass the openModal function
+        currentPage={currentPage}
+        paginate={paginate}
+        requestsPerPage={requestsPerPage}
+        searchQuery={searchQuery} // Pass search query state
+        setSearchQuery={setSearchQuery} // Pass the function to update search query
+    />
+</div>
+
 
                         {/* Workload Section */}
                         <div className="workload-wrapper">
@@ -347,6 +427,28 @@ function AdminDashboard() {
                                 <tr><th>Request Type</th><td>{selectedRequest.requestType}</td></tr>
                                 <tr><th>Date Needed</th><td>{selectedRequest.dateNeeded}</td></tr>
                                 <tr><th>Special Instructions</th><td>{selectedRequest.specialInstructions}</td></tr>
+                                {/* From Requester Section */}
+                                {selectedRequest.requesterFileUrl && (
+                                    <tr>
+                                        <th>From Requester:</th>
+                                        <td>
+                                            <button onClick={() => downloadFile(selectedRequest.requesterFileUrl, selectedRequest.requesterFileName)}>
+                                                Download {selectedRequest.requesterFileName || 'file'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )}
+                                {/* Download Evaluator Section */}
+                                {selectedRequest.fileUrl && (
+                                    <tr>
+                                        <th>Download Evaluator:</th>
+                                        <td>
+                                            <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
+                                                Download {selectedRequest.fileName || 'evaluator file'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                         <button onClick={closeModal} className="close-modal-btn">Close</button>
@@ -372,7 +474,9 @@ function AdminDashboard() {
                             ))}
                         </select>
                         <div className="lightbox-actions2">
-                            <button onClick={handleSave}>Save</button>
+                            <button onClick={handleSave} disabled={!selectedTeamMember}>
+                                Save
+                            </button>
                             <button onClick={closeOverlay}>Cancel</button>
                         </div>
                     </div>
