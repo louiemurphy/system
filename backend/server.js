@@ -20,12 +20,12 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// CORS configuration
 app.use(cors({
   origin: 'http://localhost:3000', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -79,6 +79,17 @@ const requestSchema = new mongoose.Schema({
 });
 
 const Request = mongoose.model('Request', requestSchema);
+
+// Define a Mongoose schema and model for files
+const fileSchema = new mongoose.Schema({
+  filename: { type: String, required: true },
+  originalName: { type: String, required: true },
+  fileSize: { type: Number, required: true },
+  filePath: { type: String, required: true },
+  uploadDate: { type: Date, default: Date.now },
+});
+
+const FileModel = mongoose.model('File', fileSchema);
 
 // API routes
 
@@ -156,22 +167,18 @@ app.delete("/api/requests/:id", async (req, res) => {
   }
 });
 
-// File upload route
+// Existing file upload route
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     console.log('No file received');
     return res.status(400).json({ message: "No file uploaded" });
   }
 
-  console.log('File received:', req.file);  // Check file information
-  console.log(`File path: ${req.file.path}`);  // Log file path
-  console.log(`File size: ${req.file.size} bytes`);  // Log file size
+  console.log('File received:', req.file);
+  const filePath = `/uploads/${req.file.filename}`;
 
   try {
     const requestId = req.body.requestId;
-    const filePath = `/uploads/${req.file.filename}`;
-
-    console.log('Request ID:', requestId);
 
     // Update the request with file path and file name
     const updatedRequest = await Request.findByIdAndUpdate(
@@ -194,6 +201,35 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     res.status(500).json({ message: "Error uploading file" });
   }
 });
+
+// File upload route
+app.post('/api/upload/file', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const filePath = `/uploads/${req.file.filename}`;
+
+  try {
+    const newFileRecord = new FileModel({
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      fileSize: req.file.size,
+      filePath,
+    });
+
+    await newFileRecord.save(); // Save to the database
+
+    res.status(201).json({
+      message: "File uploaded successfully",
+      file: newFileRecord,
+    });
+  } catch (error) {
+    console.error("Error saving file information:", error);
+    res.status(500).json({ message: "Error saving file information" });
+  }
+});
+
 
 // File download route
 app.get('/api/download/:filename', (req, res) => {

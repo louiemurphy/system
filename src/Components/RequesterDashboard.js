@@ -10,6 +10,7 @@ function RequesterDashboard() {
   const [error, setError] = useState(null); // Error state
   const [selectedRequest, setSelectedRequest] = useState(null); // State for selected request
   const [filterName, setFilterName] = useState(''); // State for filtering by name
+  const [selectedFile, setSelectedFile] = useState(null); // File upload state
 
   const [requestForm, setRequestForm] = useState({
     email: '',
@@ -77,6 +78,11 @@ function RequesterDashboard() {
     setRequestForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
+  // Handle file input changes
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
   // Form validation
   const validateForm = () => {
     const newErrors = {};
@@ -95,57 +101,67 @@ function RequesterDashboard() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
       try {
+        // Step 1: Create the request first (without file data)
         const response = await fetch('http://localhost:5000/api/requests', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: requestForm.email,
-            name: requestForm.name,
-            typeOfClient: requestForm.typeOfClient,
-            classification: requestForm.classification,
-            projectTitle: requestForm.projectTitle,
-            philgepsReferenceNumber: requestForm.philgepsReferenceNumber,
-            productType: requestForm.productType,
-            requestType: requestForm.requestType,
-            dateNeeded: requestForm.dateNeeded,
-            specialInstructions: requestForm.specialInstructions,
-            status: 0,
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
         });
 
-        const newRequest = await response.json();
-        const updatedRequests = [...requests, newRequest]; // Add new request to the state
-        setRequests(updatedRequests);
-        saveRequestsToLocalStorage(updatedRequests); // Update local storage with the new request
+        if (!response.ok) {
+          throw new Error('Failed to create request');
+        }
 
-        // Reset form after submission
-        setRequestForm({
-          email: '',
-          name: '',
-          typeOfClient: '',
-          classification: '',
-          projectTitle: '',
-          philgepsReferenceNumber: '',
-          productType: '',
-          requestType: '',
-          dateNeeded: '',
-          specialInstructions: '',
-          status: 0,
-        });
+        const newRequest = await response.json(); // Get the newly created request
 
-        setShowRequestForm(false); // Switch back to dashboard view after submission
-        setErrors({});
+        // Step 2: Upload the file if a file is selected (but it will not be shown in "My Requests")
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append('file', selectedFile); // Attach the selected file
+          formData.append('requestId', newRequest._id); // Attach the newly created request ID
+
+          const uploadResponse = await fetch('http://localhost:5000/api/upload', {
+            method: 'POST',
+            body: formData, // Send the file and requestId as FormData
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error('File upload failed');
+          }
+        }
+
+        // Reset the form after successful submission
+        resetForm();
+
+        // Optionally notify the user that the request was created
+        alert('Request submitted successfully.');
       } catch (error) {
         console.error('Error submitting the request:', error);
       }
     }
+  };
+
+  // Reset form
+  const resetForm = () => {
+    setRequestForm({
+      email: '',
+      name: '',
+      typeOfClient: '',
+      classification: '',
+      projectTitle: '',
+      philgepsReferenceNumber: '',
+      productType: '',
+      requestType: '',
+      dateNeeded: '',
+      specialInstructions: '',
+      status: 0,
+    });
+    setSelectedFile(null); // Clear selected file
   };
 
   // Handle row click to show details
@@ -272,7 +288,7 @@ function RequesterDashboard() {
                 </thead>
                 <tbody>
                   {filteredRequests.map((request) => (
-                    <tr key={request.id} onClick={() => handleRowClick(request)}>
+                    <tr key={request._id} onClick={() => handleRowClick(request)}>
                       <td>{request.referenceNumber}</td>
                       <td>{request.name}</td>
                       <td>{request.timestamp}</td>
@@ -299,7 +315,7 @@ function RequesterDashboard() {
                   <tbody>
                     <tr>
                       <th>ID</th>
-                      <td>{selectedRequest.id}</td>
+                      <td>{selectedRequest._id}</td>
                     </tr>
                     <tr>
                       <th>Email:</th>
@@ -521,8 +537,16 @@ function RequesterDashboard() {
                   />
                   {errors.specialInstructions && <p className="error-text">{errors.specialInstructions}</p>}
                 </div>
-                
               </div>
+
+              {/* File upload input */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Upload File (Optional)</label>
+                  <input type="file" onChange={handleFileChange} />
+                </div>
+              </div>
+
               <button type="submit" className="submit-btn">Submit Request</button>
             </form>
           </div>
