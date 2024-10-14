@@ -12,7 +12,9 @@ function RequesterDashboard() {
   const [filterName, setFilterName] = useState(''); // State for filtering by name
   const [selectedFile, setSelectedFile] = useState(null); // File upload state
   const [currentPage, setCurrentPage] = useState(1); // Pagination state
+  const [selectedMonth, setSelectedMonth] = useState(''); // State for filtering by month
   const requestsPerPage = 7; // Number of requests per page
+  const [modalVisible, setModalVisible] = useState(false); // Default is set to false
 
   const [requestForm, setRequestForm] = useState({
     email: '',
@@ -30,119 +32,15 @@ function RequesterDashboard() {
 
   const [errors, setErrors] = useState({}); // To store form errors
 
-  // Mock data for dropdowns
-  const names = [ 'Cerael Donggay', 
-    'Andrew Donggay', 
-    'Aries Paye', 
-    'Melody Nazareno',
-    'Roy Junsay',
-    'Mark Sorreda',
-    'Zir Madridano',
-    'Rizaldy Baldemor',
-    'Giovanne Bongga',
-    'Joyaneil Lumampao',
-    'Michael Bughanoy',
-    'Anthony De Gracia',
-    'Alex Cabisada',
-    'Matt Caulin',
-    'Richard Cagalawan',
-    'William Jover',
-    'Paul Shane Marte',
-    'Marvin Oteda',
-    'Julius Tan',
-    'Joren Bangquiao',
-    'Diane Yumul',
-    'Kenneth Fabroa',
-    'Mylene Agurob',
-    'BIDDING TEAM - Kia',
-    'Novi Generalao',
-    'BIDDING TEAM - Cora',
-    'BIDDING TEAM - Jan',
-    'BIDDING TEAM - Kaye',
-    'Marketing',
-    'Freelance',
-    'Ronie Serna',
-    'Andy Bello',
-    'Simon Paul Molina',
-    'Ralph Reginald Hallera Yee',
-    'Cesar Samboy Sassan']; // List of names (same as above)
+  // Mock data for dropdowns (same as before)
+  const names = ['Cerael Donggay', 'Andrew Donggay', 'Aries Paye', 'Melody Nazareno', 'Roy Junsay', 'Mark Sorreda', 'Zir Madridano', 'Rizaldy Baldemor', 'Giovanne Bongga', 'Joyaneil Lumampao', 'Michael Bughanoy', 'Anthony De Gracia', 'Alex Cabisada', 'Matt Caulin', 'Richard Cagalawan', 'William Jover', 'Paul Shane Marte', 'Marvin Oteda', 'Julius Tan', 'Joren Bangquiao', 'Diane Yumul', 'Kenneth Fabroa', 'Mylene Agurob', 'BIDDING TEAM - Kia', 'Novi Generalao', 'BIDDING TEAM - Cora', 'BIDDING TEAM - Jan', 'BIDDING TEAM - Kaye', 'Marketing', 'Freelance', 'Ronie Serna', 'Andy Bello', 'Simon Paul Molina', 'Ralph Reginald Hallera Yee', 'Cesar Samboy Sassan'];
 
-  const productTypes = ['Solar Roof Top',
-    'Solar Lights',
-    'Solar Pump',
-    'AC Lights',
-    'Diesel Generator',
-    'Transformer',
-    'Electric Vehicle',
-    'Floating Solar',
-    'Micro Grid',
-    'Solar Road Stud',
-    'Georesistivity',
-    'Drilling',
-    'Prefab Container',
-    'Command Center',
-    'ICT Products',
-    'Energy Audit',
-    'Building Construction',
-    'Road Concreting',
-    'Drone',
-    'Agricultural Machinery',
-    'Ice Machine',
-    'Riprap',
-    'Retaining Wall',
-    'Industrial Pumps',
-    'Building Wiring Installation',
-    'Solar CCTV',
-    'Solar Farm',
-    'Solar Insect Traps',
-    'Solar Water Heater',
-    'Concrete Water Tank',
-    'Solar Waiting Shed',
-    'Solar Prefab Container',
-    'Structured Cabling',
-    'Water Desalination',
-    'Steel Water Tank',
-    'Hydroponics',
-    'HVAC',
-    'Piping System',
-    'Water System',
-    'Conveyor System',
-    'Solar Generator',
-    'Solar Water Purifier',
-    'Heavy Equipment',
-    'Traffic Light',
-    'AC CCTV',
-    'Solar Aerator',
-    'AC Aerator']; // List of product types (same as above)
+  const productTypes = ['Solar Roof Top', 'Solar Lights', 'Solar Pump', 'AC Lights', 'Diesel Generator', 'Transformer', 'Electric Vehicle', 'Floating Solar', 'Micro Grid', 'Solar Road Stud', 'Georesistivity', 'Drilling', 'Prefab Container', 'Command Center', 'ICT Products', 'Energy Audit', 'Building Construction', 'Road Concreting', 'Drone', 'Agricultural Machinery', 'Ice Machine', 'Riprap', 'Retaining Wall', 'Industrial Pumps', 'Building Wiring Installation', 'Solar CCTV', 'Solar Farm', 'Solar Insect Traps', 'Solar Water Heater', 'Concrete Water Tank', 'Solar Waiting Shed', 'Solar Prefab Container', 'Structured Cabling', 'Water Desalination', 'Steel Water Tank', 'Hydroponics', 'HVAC', 'Piping System', 'Water System', 'Conveyor System', 'Solar Generator', 'Solar Water Purifier', 'Heavy Equipment', 'Traffic Light', 'AC CCTV', 'Solar Aerator', 'AC Aerator'];
 
-  const requestTypes = ['Site Survey',
-    'Project Evaluation',
-    'Request for Quotation',
-    'Proposal Approval',
-    'Design and Estimates',
-    'Program of Works',
-    'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works',
-    'Project Evaluation, Request for Quotation',
-    'Design and Estimates, Program of Works',
-    'Request for Quotation, Design and Estimates',
-    'Project Evaluation, Request for Quotation, Design and Estimates',
-    'Proposal Approval, Design and Estimates, Detailed Estimates of the Project',
-    'Request for Quotation, Design and Estimates, Product Presentation',
-    'Product Presentation',
-    'PVSYST Report',
-    'Electrical Diagram',
-    'Pricelist',
-    'Detailed Cost Estimates of the Project - total amount should match the selling price',
-    'Project Evaluation, Design and Estimates',
-    'Proposal Approval, Design and Estimates',
-    'Roofing Layout',
-    'Roofing Layout, Electrical Diagram',
-    'Schematic Diagram for Solar',
-    'Load Profiling',
-    'Data Sheet or Specification']; // List of request types (same as above)
+  const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', 'Proposal Approval', 'Design and Estimates', 'Program of Works', 'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works', 'Project Evaluation, Request for Quotation', 'Design and Estimates, Program of Works', 'Request for Quotation, Design and Estimates', 'Project Evaluation, Request for Quotation, Design and Estimates', 'Proposal Approval, Design and Estimates, Detailed Estimates of the Project', 'Request for Quotation, Design and Estimates, Product Presentation', 'Product Presentation', 'PVSYST Report', 'Electrical Diagram', 'Pricelist', 'Detailed Cost Estimates of the Project - total amount should match the selling price', 'Project Evaluation, Design and Estimates', 'Proposal Approval, Design and Estimates', 'Roofing Layout', 'Roofing Layout, Electrical Diagram', 'Schematic Diagram for Solar', 'Load Profiling', 'Data Sheet or Specification'];
 
   const typeOfClient = ['Private', 'Government'];
-  
+
   // Fetch all requests when the component mounts
   useEffect(() => {
     fetchRequests();
@@ -176,17 +74,74 @@ function RequesterDashboard() {
     localStorage.setItem('requests', JSON.stringify(requestsToSave));
   };
 
-  const handleNewRequestClick = () => setShowRequestForm((prev) => !prev);
-
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setRequestForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
+  // Handle file input changes
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // Handle month change for filtering
+  const handleMonthChange = (e) => {
+    setSelectedMonth(e.target.value);
+  };
+  
+
+  const getMonthNumber = (month) => {
+    const months = {
+      January: 1,
+      February: 2,
+      March: 3,
+      April: 4,
+      May: 5,
+      June: 6,
+      July: 7,
+      August: 8,
+      September: 9,
+      October: 10,
+      November: 11,
+      December: 12,
+    };
+    return months[month] || '';
+  };
+
+  // Filter requests by selected name and month
+  const filteredRequests = requests.filter((request) => {
+    const requestDate = new Date(request.timestamp);
+    const requestMonth = requestDate.getMonth() + 1;
+
+    const selectedMonthNumber = getMonthNumber(selectedMonth);
+    const matchesSearchQuery = filterName === '' || request.name === filterName;
+    const matchesMonth = selectedMonth === '' || requestMonth === selectedMonthNumber;
+
+    return matchesSearchQuery && matchesMonth;
+  });
+
+  // Calculate metrics for the selected user (filterName)
+  const totalRequestsForUser = filteredRequests.length;
+  const openRequestsForUser = filteredRequests.filter(req => req.status === 1).length;
+  const closedRequestsForUser = filteredRequests.filter(req => req.status === 2).length;
+
+  // Pagination logic
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+
+  // Handle page changes
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  // Validate form inputs
   const validateForm = () => {
     const newErrors = {};
     if (!requestForm.email) newErrors.email = 'This is a required question';
@@ -206,7 +161,7 @@ function RequesterDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (validateForm()) {
       try {
         // Step 1: Create the request first (without file data)
@@ -215,31 +170,31 @@ function RequesterDashboard() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
         });
-  
+
         if (!response.ok) {
           throw new Error('Failed to create request');
         }
-  
+
         const newRequest = await response.json(); // Get the newly created request
-  
+
         // Step 2: Upload the file if a file is selected
         if (selectedFile) {
           const formData = new FormData();
           formData.append('file', selectedFile); // Attach the selected file
           formData.append('requestId', newRequest._id); // Attach the newly created request ID
-  
+
           const uploadResponse = await fetch('http://localhost:5000/api/requester/upload', {
             method: 'POST',
             body: formData, // Send the file and requestId as FormData
           });
-  
+
           if (!uploadResponse.ok) {
             throw new Error('File upload failed');
           }
-  
+
           // Fetch the updated request data after file upload
           const updatedRequest = await uploadResponse.json();
-  
+
           // Manually update the request in the state
           setRequests((prevRequests) =>
             prevRequests.map((request) =>
@@ -247,7 +202,7 @@ function RequesterDashboard() {
             )
           );
         }
-  
+
         // Reset the form after successful submission
         resetForm();
         alert('Request submitted successfully.');
@@ -281,7 +236,11 @@ function RequesterDashboard() {
   const closeModal = () => {
     setSelectedRequest(null); // Deselect the request
   };
-
+  const closeModal1 = () => {
+    setShowRequestForm(false); // Hide the form
+    setSelectedRequest(null); // Deselect any selected request (if needed)
+  };
+  
   const downloadFile = async (fileUrl, fileName) => {
     try {
       const response = await fetch(`http://localhost:5000${fileUrl}`, {
@@ -312,26 +271,6 @@ function RequesterDashboard() {
     }
   };
 
-  // Filter requests by selected name
-  const filteredRequests = filterName
-    ? requests.filter((request) => request.name === filterName)
-    : requests;
-
-  // Pagination logic
-  const indexOfLastRequest = currentPage * requestsPerPage;
-  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
-  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
-
-  // Handle page changes
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
   // Show loading state
   if (loading) {
     return <div className="spinner">Loading...</div>;
@@ -346,55 +285,80 @@ function RequesterDashboard() {
     <div className={`dashboard-container ${showRequestForm ? 'full-screen-form' : ''}`}>
       {!showRequestForm ? (
         <>
-          <div className="sidebar">
-            <div className="sidebar-header">
-              <h2>Requester Dashboard</h2>
-            </div>
-            <ul className="sidebar-menu">
-              <li>Dashboard</li>
-              <li>Requests</li>
-            </ul>
+          <div className="sidebar3">
+            
           </div>
 
           <div className="main-content">
             <div className="top-metrics">
               <div className="card">
                 <FaUsers className="card-icon" />
-                <h3>{requests.length}</h3>
+                <h3>{totalRequestsForUser}</h3>
                 <p>TOTAL REQUEST</p>
               </div>
               <div className="card">
                 <FaShoppingCart className="card-icon" />
-                <h3>{requests.filter(req => req.classification === 'Pending').length}</h3>
+                <h3>{openRequestsForUser}</h3>
                 <p>OPEN</p>
               </div>
               <div className="card">
                 <FaBox className="card-icon" />
-                <h3>{requests.filter(req => req.classification === 'Completed').length}</h3>
+                <h3>{closedRequestsForUser}</h3>
                 <p>CLOSED</p>
               </div>
             </div>
 
-            <button className="create-request-btn" onClick={handleNewRequestClick}>
-              {showRequestForm ? 'Cancel Request' : 'Create New Request'}
-            </button>
+            <button
+  className="create-request-btn"
+  onClick={() => {
+    console.log("Button clicked");
+    setShowRequestForm(!showRequestForm);
+  }}
+>
+  {showRequestForm ? 'Cancel Request' : 'Create New Request'}
+</button>
+
 
             <div className="table-container">
               <div className="table-header">
                 <h3 className='table2'>My Requests</h3>
-                {/* Name filter dropdown */}
-                <select
-                  className="name-filter"
-                  value={filterName}
-                  onChange={(e) => setFilterName(e.target.value)}
-                >
-                  <option value="">All Users</option>
-                  {names.map((name, index) => (
-                    <option key={index} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
+
+                <div className="filter-container">
+                  {/* Name filter dropdown */}
+                  <select
+                    className="name-filter"
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                  >
+                    <option value="">All Users</option>
+                    {names.map((name, index) => (
+                      <option key={index} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Month filter dropdown */}
+                  <select
+                    className="month-filter"
+                    value={selectedMonth}
+                    onChange={handleMonthChange}
+                  >
+                    <option value="">All Months</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </select>
+                </div>
               </div>
 
               <table className="request-table">
@@ -406,6 +370,7 @@ function RequesterDashboard() {
                     <th>PROJECT TITLE</th>
                     <th>ASSIGNED TO</th>
                     <th>STATUS</th>
+                    <th>DATE COMPLETED</th> {/* Added Date Completed column */}
                   </tr>
                 </thead>
                 <tbody>
@@ -417,23 +382,34 @@ function RequesterDashboard() {
                       <td>{request.projectTitle}</td>
                       <td>{request.assignedTo || 'Unassigned'}</td>
                       <td>{request.status === 1 ? 'Ongoing' : request.status === 2 ? 'Complete' : 'Pending'}</td>
+                      <td>{request.status === 2 ? new Date(request.completedAt).toLocaleDateString() : 'N/A'}</td> {/* Date Completed logic */}
                     </tr>
                   ))}
                 </tbody>
               </table>
 
               {/* Pagination Controls */}
-              <div className="pagination-controls">
-                <button onClick={handlePreviousPage} disabled={currentPage === 1}>
-                  &lt; Previous
-                </button>
-                <span>
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-                  Next &gt;
-                </button>
-              </div>
+              {/* Pagination Controls */}
+{/* Pagination Controls */}
+<div className="pagination-controls1">
+  <button 
+    className="pagination-btn" 
+    onClick={handlePreviousPage} 
+    disabled={currentPage === 1}>
+    &lt;
+  </button>
+  <span className="pagination-info">
+    Page {currentPage} of {totalPages}
+  </span>
+  <button 
+    className="pagination-btn" 
+    onClick={handleNextPage} 
+    disabled={currentPage === totalPages}>
+    &gt;
+  </button>
+</div>
+
+
             </div>
           </div>
 
@@ -448,47 +424,45 @@ function RequesterDashboard() {
                       <td>{selectedRequest._id}</td>
                     </tr>
                     <tr>
-                      <th>Email:</th>
+                      <th>Email</th>
                       <td>{selectedRequest.email}</td>
                     </tr>
                     <tr>
-                      <th>Name:</th>
+                      <th>Name</th>
                       <td>{selectedRequest.name}</td>
                     </tr>
                     <tr>
-                      <th>Type of Client:</th>
+                      <th>Type of Client</th>
                       <td>{selectedRequest.typeOfClient}</td>
                     </tr>
                     <tr>
-                      <th>Classification:</th>
+                      <th>Classification</th>
                       <td>{selectedRequest.classification}</td>
                     </tr>
                     <tr>
-                      <th>Project Title:</th>
+                      <th>Project Title</th>
                       <td>{selectedRequest.projectTitle}</td>
                     </tr>
                     <tr>
-                      <th>Philgeps Reference Number:</th>
+                      <th>Philgeps Reference Number</th>
                       <td>{selectedRequest.philgepsReferenceNumber}</td>
                     </tr>
                     <tr>
-                      <th>Product Type:</th>
+                      <th>Product Type</th>
                       <td>{selectedRequest.productType}</td>
                     </tr>
                     <tr>
-                      <th>Request Type:</th>
+                      <th>Request Type</th>
                       <td>{selectedRequest.requestType}</td>
                     </tr>
                     <tr>
-                      <th>Date Needed:</th>
+                      <th>Date Needed</th>
                       <td>{selectedRequest.dateNeeded}</td>
                     </tr>
                     <tr>
-                      <th>Special Instructions:</th>
+                      <th>Special Instructions</th>
                       <td>{selectedRequest.specialInstructions}</td>
                     </tr>
-
-                    {/* Files From Requester Section */}
                     {selectedRequest.requesterFileUrl && (
                       <tr>
                         <th>From Requester:</th>
@@ -499,11 +473,9 @@ function RequesterDashboard() {
                         </td>
                       </tr>
                     )}
-
-                    {/* Files From Evaluator Section */}
                     {selectedRequest.fileUrl && (
                       <tr>
-                        <th>Download Evaluator:</th>
+                        <th>From Evaluator:</th>
                         <td>
                           <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
                             Download {selectedRequest.fileName || 'evaluator file'}
@@ -511,16 +483,13 @@ function RequesterDashboard() {
                         </td>
                       </tr>
                     )}
-
                     <tr>
-                      <th>Status:</th>
-                      <td>
-                        {selectedRequest.status === 1
-                          ? 'Ongoing'
-                          : selectedRequest.status === 2
-                          ? 'Complete'
-                          : 'Pending'}
-                      </td>
+                      <th>Status</th>
+                      <td>{selectedRequest.status === 1 ? 'Ongoing' : selectedRequest.status === 2 ? 'Complete' : 'Pending'}</td>
+                    </tr>
+                    <tr>
+                      <th>Date Completed</th>
+                      <td>{selectedRequest.status === 2 ? new Date(selectedRequest.completedAt).toLocaleDateString() : 'N/A'}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -530,39 +499,41 @@ function RequesterDashboard() {
           )}
         </>
       ) : (
-        <section className="modal2">
-          <div className="modal2-content">
-            <form onSubmit={handleSubmit} className="request-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Email <span className="required">*</span></label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={requestForm.email}
-                    onChange={handleInputChange}
-                    placeholder="Your email"
-                    className={errors.email ? 'input-error' : ''}
-                  />
-                  {errors.email && <p className="error-text">{errors.email}</p>}
-                </div>
+        <section className="fullscreen-section">
+  <div className="fullscreen-content">
+  <button onClick={closeModal1} className="close-modal-btn">Close</button>
 
-                <div className="form-group">
-                  <label>Your Name <span className="required">*</span></label>
-                  <select
-                    name="name"
-                    value={requestForm.name}
-                    onChange={handleInputChange}
-                    className={errors.name ? 'input-error' : ''}
-                  >
-                    <option value="">Select your name</option>
-                    {names.map((name, index) => (
-                      <option key={index} value={name}>{name}</option>
-                    ))}
-                  </select>
-                  {errors.name && <p className="error-text">{errors.name}</p>}
-                </div>
-              </div>
+    <form onSubmit={handleSubmit} className="request-form">
+      <div className="form-row">
+        <div className="form-group">
+          <label>Email <span className="required">*</span></label>
+          <input
+            type="email"
+            name="email"
+            value={requestForm.email}
+            onChange={handleInputChange}
+            placeholder="Your email"
+            className={errors.email ? 'input-error' : ''}
+          />
+          {errors.email && <p className="error-text">{errors.email}</p>}
+        </div>
+
+        <div className="form-group">
+          <label>Your Name <span className="required">*</span></label>
+          <select
+            name="name"
+            value={requestForm.name}
+            onChange={handleInputChange}
+            className={errors.name ? 'input-error' : ''}
+          >
+            <option value="">Select your name</option>
+            {names.map((name, index) => (
+              <option key={index} value={name}>{name}</option>
+            ))}
+          </select>
+          {errors.name && <p className="error-text">{errors.name}</p>}
+        </div>
+      </div>
 
               <div className="form-row">
                 <div className="form-group">

@@ -33,130 +33,100 @@ body, html {
     box-sizing: border-box;
 }
 
-/* Modal Styling */
-.modal2 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+/* Fullscreen Section */
+.fullscreen-section {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    background-color: #f4f7fc; /* Light gray background */
+    padding: 20px; /* Padding around the section to ensure space */
+    box-sizing: border-box;
 }
 
-.modal2-content {
+/* Fullscreen Form Container */
+.fullscreen-content {
     background-color: white;
-    padding: 30px;
+    padding: 20px;
     border-radius: 8px;
-    width: 90%;
-    height: auto;
-    max-width: 1200px;
+    width: 100%; /* Take full width of the screen */
+    max-width: 1200px; /* Set a maximum width for large screens */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     overflow-y: auto;
-    box-sizing: border-box;
+    height: auto; /* Allow content to expand */
 }
 
-/* Request form layout */
+/* Request Form Layout */
 .request-form {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* Two-column grid */
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
+    gap: 20px; /* Spacing between form fields */
+    width: 100%; /* Full width */
     margin: auto;
-    padding: 20px 0; /* Add padding */
+    padding: 10px 0;
 }
 
-/* Form Row Styling */
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    gap: 20px;
+/* Responsive Fullscreen Layout */
+@media (max-width: 768px) {
+    .fullscreen-content {
+        width: 100%; /* Full width on small screens */
+        padding: 20px;
+    }
+
+    .request-form {
+        grid-template-columns: 1fr; /* Stack form fields on small screens */
+        max-width: 100%;
+    }
 }
 
-/* Form Group Styling */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-}
-
-/* Larger field spacing for better looks */
-.form-group-half {
-    flex: 1;
-}
-
-.form-group-full {
-    grid-column: span 2; /* Span two columns for full width elements */
-}
-
-/* Label and Input styling */
-.form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #333333;
-}
-
-.form-group .required {
-    color: red;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* Focus styles */
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: #1D2D50;
-    outline: none;
-    box-shadow: 0 0 4px rgba(29, 45, 80, 0.2);
-}
-
-/* Button styling */
+/* Button Styles */
 .submit-btn {
+    padding: 10px 15px;
     background-color: #1D2D50;
     color: white;
     border: none;
-    padding: 12px 20px;
     border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 30px;
-    align-self: center;
-    width: 500px; /* Set a consistent width for the button */
+    margin-top: 10px;
+    grid-column: span 2; /* Span submit button across the entire form width */
 }
 
 .submit-btn:hover {
-    background-color: #0f1a30;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #142039;
 }
 
-/* Textarea height adjustment */
-.form-group textarea {
-    resize: vertical;
-    min-height: 100px; /* Give a reasonable height */
+/* Close Button (if necessary) */
+.close-modal-btn {
+    background-color: transparent;
+    color: #e74c3c;
+    padding: 8px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    transition: color 0.3s ease;
 }
 
+.close-modal-btn:hover {
+    color: #c0392b;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px; /* Space between form fields */
+    position: relative;
+    width: 100%;
+}
 
 /* Modal Responsiveness */
 @media (max-width: 768px) {
@@ -189,7 +159,7 @@ body, html {
 }
 
 /* Sidebar Styling */
-.sidebar {
+.sidebar3 {
     background-color: #2c3e50;
     color: white;
     width: 250px;
@@ -246,7 +216,7 @@ body, html {
 .top-metrics {
     display: flex;
     justify-content: space-around;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .card {
@@ -288,7 +258,7 @@ body, html {
 /* Adjusting column widths */
 .request-table th:nth-child(1),
 .request-table td:nth-child(1) {
-    width: 4%; /* REQID column width */
+    width: 5%; /* REQID column width */
 }
 
 .request-table th:nth-child(2),
@@ -298,22 +268,22 @@ body, html {
 
 .request-table th:nth-child(3),
 .request-table td:nth-child(3) {
-    width: 10%; /* Timestamp column */
+    width: 12%; /* Timestamp column */
 }
 
 .request-table th:nth-child(4),
 .request-table td:nth-child(4) {
-    width: 40%; /* Project Title column with more space */
+    width: 43%; /* Project Title column with more space */
 }
 
 .request-table th:nth-child(5),
 .request-table td:nth-child(5) {
-    width: 7%; /* Assigned To column width */
+    width: 13%; /* Assigned To column width */
 }
 
 .request-table th:nth-child(6),
 .request-table td:nth-child(6) {
-    width: 7%; /* Status column width */
+    width: 10%; /* Status column width */
 }
 
 /* Optional row hover effect for interactivity */
@@ -346,7 +316,9 @@ body, html {
     transition: background-color 0.3s ease;
     float: right;
     margin-right: 20px;
-    margin-top: 10px;
+    margin-top: 65px;
+    position: relative;
+  z-index: 100; /* Ensure it's above other elements */
 }
 
 .create-request-btn:hover {
@@ -429,9 +401,12 @@ textarea.error {
 .error-text {
     color: red;
     font-size: 12px;
-    margin-top: 5px;
+    position: absolute;
+    bottom: -35px; /* Adjust this value to move the error below the input field */
+    left: 0;
+    width: 100%; /* Ensures the message spans the entire width */
+    text-align: left; /* Align text to the left */
 }
-
 .submit-btn {
     background-color: #3498db;
     color: white;
@@ -447,73 +422,7 @@ textarea.error {
     background-color: #2980b9;
 }
 
-/* Modal Styling */
-/* Modal Styling */
-/* Modal Styling */
-/* Modal Styling */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Darker semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    overflow-y: auto;
-}
 
-/* Full-screen wide content */
-.modal-content {
-    background-color: white;
-    padding: 40px; /* Slightly more padding for a balanced layout */
-    width: 85%; /* Professional width */
-    height: auto; /* Automatic height based on content */
-    max-width: 1200px; /* Max width for very large screens */
-    max-height: 90vh; /* Prevent content from overflowing viewport */
-    border-radius: 10px; /* Smooth and professional rounded corners */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Soft, elevated shadow for depth */
-    overflow-y: auto; /* Enable scrolling if content exceeds modal height */
-    font-family: 'Roboto', sans-serif;
-    color: #2c3e50; /* Professional dark text color */
-    position: relative; /* Ensure the close button is properly positioned */
-    transition: transform 0.3s ease-in-out; /* Smooth appearance */
-}
-
-.modal-content:hover {
-    transform: scale(1.02); /* Subtle hover effect for professional feel */
-}
-
-/* Table inside the modal */
-.modal-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px; /* Added margin for space */
-    table-layout: fixed;
-}
-
-.modal-table th,
-.modal-table td {
-    border: 1px solid #e0e0e0; /* Light border for minimal look */
-    padding: 15px; /* Increased padding for better spacing */
-    text-align: left;
-}
-
-.modal-table th {
-    background-color: #f8f8f8; /* Light background for table headers */
-    color: #2c3e50; /* Consistent with text color */
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.modal-table td {
-    background-color: #ffffff; /* Clean white background */
-    font-size: 15px;
-    color: #2c3e50;
-    word-wrap: break-word;
-}
 
 /* Close button */
 .close-modal-btn {
@@ -599,7 +508,7 @@ select:focus {
     margin-left: 10px;
     text-align: left;
 }
-.pagination-controls {
+.pagination-controls1 {
     display: flex;
     align-items: center;
     justify-content: right;
@@ -642,3 +551,126 @@ select:focus {
     background-color: #0a2a45;
   }
   
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    z-index: 1000; /* Ensure it's above other content */
+  }
+  
+  .modal-content {
+    background-color: white;
+    width: 90%; /* Adjust as needed */
+    height: 90%; /* Adjust as needed */
+    overflow-y: auto; /* Scroll if content overflows */
+    padding: 20px; /* Add some padding */
+    border-radius: 8px; /* Optional: rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapse borders */
+    margin-top: 20px; /* Space above the table */
+  }
+  
+  .modal-table th,
+  .modal-table td {
+    padding: 10px; /* Padding for cells */
+    border: 1px solid #ccc; /* Light gray border */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .modal-table th {
+    background-color: #f4f4f4; /* Light gray background for header */
+    font-weight: bold; /* Bold text for headers */
+  }
+  
+  .modal-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row color */
+  }
+  
+  .modal-table tr:hover {
+    background-color: #e9e9e9; /* Highlight row on hover */
+  }
+  
+  /* Filter container to align both dropdowns side by side */
+.filter-container {
+    display: flex;
+    gap: 15px; /* Space between the filters */
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .name-filter, .month-filter {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .name-filter {
+    min-width: 200px; /* Set minimum width for the name filter */
+  }
+  
+  .month-filter {
+    min-width: 150px; /* Set minimum width for the month filter */
+  }
+
+  /* Adjust filter container layout */
+.filter-container {
+    display: flex;
+    gap: 10px; /* Space between the filters */
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.name-filter, .month-filter {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    max-width: 160px; /* Ensure the dropdowns are more compact */
+    width: auto; /* Adjust to auto-width */
+}
+
+.name-filter {
+    width: 160px; /* Specific width for All Users dropdown */
+}
+
+.month-filter {
+    width: 140px; /* Specific width for All Months dropdown */
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 5px; /* Space between the input field and error message */
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #1D2D50;
+    outline: none;
+    box-shadow: 0 0 3px rgba(29, 45, 80, 0.2);
+}
+
+/* Add some margin for the error message to push inputs and prevent overlap */
+.error {
+    margin-bottom: 15px;
+}

@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Update with your frontend URL
+  origin: 'http://localhost:3003', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -71,26 +71,26 @@ const requestSchema = new mongoose.Schema({
   requestType: String,
   dateNeeded: String,
   specialInstructions: String,
-  assignedTo: String,
+  assignedTo: String,  // Add this to store the assigned team member
   status: { type: Number, default: 0 }, // Default to Pending
   fileUrl: String,  // URL to the evaluator's uploaded file
   fileName: String, // Original evaluator file name
   requesterFileUrl: String,  // URL to the requester's uploaded file
-  requesterFileName: String  // Original requester file name
+  requesterFileName: String,  // Original requester file name
+  completedAt: Date // New field to store the date when the request is marked as completed
 });
 
 const Request = mongoose.model('Request', requestSchema);
 
-// Define a Mongoose schema and model for files
-const fileSchema = new mongoose.Schema({
-  filename: { type: String, required: true },
-  originalName: { type: String, required: true },
-  fileSize: { type: Number, required: true },
-  filePath: { type: String, required: true },
-  uploadDate: { type: Date, default: Date.now },
+// Define a Mongoose schema and model for team members
+const teamMemberSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  openTasks: { type: Number, required: true },
+  closedTasks: { type: Number, required: true },
+  completionRate: { type: Number, required: true },
 });
 
-const FileModel = mongoose.model('File', fileSchema);
+const TeamMember = mongoose.model('TeamMember', teamMemberSchema);
 
 // API routes
 
@@ -138,7 +138,15 @@ app.post("/api/requests", async (req, res) => {
 app.put("/api/requests/:id", async (req, res) => {
   try {
     const requestId = req.params.id;
-    const updatedRequest = await Request.findByIdAndUpdate(requestId, req.body, { new: true });
+    const { status, completedAt, assignedTo } = req.body; // Get status, completedAt, and assignedTo from the request body
+
+    // If the status is marked as "Completed", store the completedAt field
+    const updateData = { status, assignedTo };
+    if (status === 2 && completedAt) {
+      updateData.completedAt = completedAt;
+    }
+
+    const updatedRequest = await Request.findByIdAndUpdate(requestId, updateData, { new: true });
 
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
@@ -168,7 +176,60 @@ app.delete("/api/requests/:id", async (req, res) => {
   }
 });
 
-// Existing file upload route for evaluator
+// GET all team members
+app.get("/api/teamMembers", async (req, res) => {
+  try {
+    const teamMembers = await TeamMember.find(); // Fetch all team members from the database
+    res.json(teamMembers);
+  } catch (error) {
+    console.error("Error fetching team members:", error);
+    res.status(500).json({ message: "Error fetching team members" });
+  }
+});
+
+// New endpoint to calculate and send task stats for team members
+app.get("/api/teamMembers/stats", async (req, res) => {
+  try {
+    // Fetch all requests
+    const requests = await Request.find();
+
+    // Create a map to hold the task stats for each team member
+    const memberStats = {};
+
+    requests.forEach((request) => {
+      const assignedMember = request.assignedTo;
+      if (assignedMember) {
+        if (!memberStats[assignedMember]) {
+          memberStats[assignedMember] = { openTasks: 0, closedTasks: 0 };
+        }
+        
+        // Increment open or closed tasks based on the request status
+        if (request.status === 0) {
+          memberStats[assignedMember].openTasks += 1; // Pending
+        } else if (request.status === 2) {
+          memberStats[assignedMember].closedTasks += 1; // Completed
+        }
+      }
+    });
+
+    // Format the response data
+    const response = Object.keys(memberStats).map(name => ({
+      name,
+      openTasks: memberStats[name].openTasks,
+      closedTasks: memberStats[name].closedTasks,
+      completionRate: memberStats[name].closedTasks + memberStats[name].openTasks > 0
+        ? Math.round((memberStats[name].closedTasks / (memberStats[name].closedTasks + memberStats[name].openTasks)) * 100)
+        : 0,
+    }));
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching team member stats:", error);
+    res.status(500).json({ message: "Error fetching team member stats" });
+  }
+});
+
+// File upload route for evaluator
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     console.log('No file received');

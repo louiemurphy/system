@@ -1,0 +1,98 @@
+.all-profiles-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #f8f9fa; /* Light background color */
+    border-radius: 10px; /* Rounded container */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Soft shadow for container */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.profiles-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background-color: #ffffff; /* White background for cards */
+    border: none; /* Remove border */
+    padding: 20px;
+    width: 40%;
+    max-width: 350px; /* Set max width for cards */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow for cards */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover animation */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Add depth to shadow on hover */
+}
+
+.details {
+    margin-bottom: 15px;
+}
+
+.profile-name {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: bold;
+}
+
+.task-stats {
+    font-size: 1em;
+    margin: 5px 0;
+    color: #555;
+}
+
+.task-stats span {
+    font-weight: bold;
+    color: #000; /* Make the stats more prominent */
+}
+
+.completion {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.icon {
+    margin-right: 10px;
+    color: #6c757d; /* Icon color */
+}
+
+.completion-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.completion-rate {
+    font-size: 1.2em;
+    color: green;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .profiles-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%; /* Adjust card size for smaller screens */
+    }
+}

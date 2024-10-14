@@ -16,8 +16,11 @@ function Login() {
   const evaluatorEmails = {
     'charles.coscos@example.com': '/dashboard/evaluator/charles',
     'caryl.apa@example.com': '/dashboard/evaluator/caryl',
-    'patrick.paclibar@example.com': '/dashboard/evaluator/patrick',
-    'vincent.go@example.com': '/dashboard/evaluator/vincent'
+    'patrick.paclibar@greenergy.com': '/dashboard/evaluator/patrick',
+    'vincent.go@greenergy.com': '/dashboard/evaluator/vincent',
+    'jayr@greenergy.com': '/dashboard/evaluator/jay',
+    'rodel.bartolata@greenergy.com': '/dashboard/evaluator/rodel',
+    'tristan@greenergy.com': '/dashboard/evaluator/tristan',
   };
 
   const handleSubmit = async (e) => {

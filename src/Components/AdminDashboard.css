@@ -7,7 +7,7 @@ body, html {
     color: #333;
     height: 100%;
     width: 100%;
-    overflow: hidden; /* Remove scrollbars */
+    overflow: hidden;
 }
 
 .admin-dashboard {
@@ -80,23 +80,22 @@ body, html {
 }
 
 .header-left2 {
-    flex: 1; /* Allow this to grow and take space */
+    flex: 1;
     display: flex;
     align-items: center;
-    margin-left: 306px;
+    margin-left: 300px; /* Adjust left margin for consistency */
 }
 
 .header-right2 {
     display: flex;
     align-items: center;
-    margin-right: 0px;
+    margin-right: 20px;
 }
 
 .header-right2 * {
-    font-weight: bold; /* Make all child elements bold */
+    font-weight: bold;
 }
 
-/* Header Title and Paragraph */
 .header-content2 h1 {
     font-size: 24px;
     font-weight: bold;
@@ -116,12 +115,11 @@ body, html {
     justify-content: space-between;
     width: calc(100% - 400px); /* Adjust to fit the width after sidebar */
     padding: 20px 30px;
-    height: 150px; /* Fixed height for alignment */
+    height: 150px;
     background-color: #fff;
     border-radius: 20px;
     margin-left: 330px; /* Push it to the right */
-    width: 83%; /* Set width relative to parent */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional shadow for a more defined look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-box2 {
@@ -132,34 +130,33 @@ body, html {
     font-size: 16px;
     color: #1D2D50;
     font-weight: 600;
-    flex: 1; /* Make each box take equal space */
-    margin: 0 5px; /* Adjust margin for equal spacing */
+    flex: 1;
+    margin: 0 5px;
     display: flex;
-    flex-direction: column; /* Stack label and value vertically */
-    justify-content: center; /* Center the label and value vertically */
-    align-items: center; /* Center the content horizontally */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-
-.label {
-    font-size: 16px; /* Label font size */
-    font-weight: normal; /* Normal weight for the label */
-    color: #1D2D50; /* Color for the label */
-}
-
-.value {
-    font-size: 24px; /* Larger font size for the value */
-    margin-top: 5px; /* Space between label and value */
-    font-weight: bold; /* Bold font for the value */
-    color: #1D2D50; /* Color for the value */
-}
-
 
 .stat-box2:first-child {
-    margin-left: 0; /* Remove left margin from the first box */
+    margin-left: 0;
 }
 
 .stat-box2:last-child {
-    margin-right: 0; /* Remove right margin from the last box */
+    margin-right: 0;
+}
+
+.label {
+    font-size: 16px;
+    font-weight: normal;
+    color: #1D2D50;
+}
+
+.value {
+    font-size: 24px;
+    margin-top: 5px;
+    font-weight: bold;
+    color: #1D2D50;
 }
 
 /* Main Content Section */
@@ -168,9 +165,8 @@ body, html {
     justify-content: space-between;
     gap: 30px;
     width: 100%;
-    height: calc(124vh - 200px); /* Adjusted height to account for header and status summary */
-    padding: 0 20px;
-    margin: 1px;
+    height: calc(124vh - 200px); /* Adjusted height */
+    padding: 20px; /* Added padding for spacing */
     box-sizing: border-box;
 }
 
@@ -178,7 +174,7 @@ body, html {
 .request-list2 {
     flex-grow: 8;
     background-color: #fff;
-    padding: 20px; 
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -186,33 +182,79 @@ body, html {
     height: calc(95vh - 240px);
     overflow-y: auto;
     box-sizing: border-box;
-    margin-left: 55px;
-    width: calc(102% - 70px); /* Increased width to 93% for a slightly wider request list */
+    margin-left: 10px; /* Reduced margin for spacing */
+    width: calc(100% - 70px); /* Adjusted width */
 }
 
-
-/* Search Bar */
-.search-bar2 {
+.search-and-pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
     margin-bottom: 20px;
-    width: 100%;
-    max-width: 600px;
-    margin: 0;
+    width: 100%; /* Ensure it spans the full width */
 }
 
-/* Table Container */
+.search-input {
+    width: 400px; /* Shorten the width */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Align filter and pagination controls */
+.month-filter-pagination {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Increase gap for breathing room */
+    justify-content: flex-end; /* Align filter and pagination to the right */
+    flex: 1; /* Ensure the pagination controls also take up space */
+}
+
+.pagination-controls {
+    position: absolute; /* Position the controls absolutely */
+    top: 330px; /* Adjust the top position */
+    right: 43px; /* Adjust the right position */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.table-container {
+    position: relative; /* Make the container relative to position the pagination inside */
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #333;
+}
+
+.pagination-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    background-color: #001f3f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Table Styling */
 .table-container2 {
     width: 100%;
-    overflow-x: auto; /* Horizontal scrolling if table exceeds width */
+    overflow-x: auto;
     height: calc(90vh - 300px);
     overflow-y: auto;
     box-sizing: border-box;
-}
-
-/* Request Table */
-.request-table2 {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
 }
 
 .request-table2 th, .request-table2 td {
@@ -223,7 +265,6 @@ body, html {
     word-break: break-word; /* Break long words onto a new line */
 }
 
-/* Set fixed widths for specific columns */
 .request-table2 th:nth-child(3), /* Project Title Column */
 .request-table2 td:nth-child(3) {
     width: 40%; /* Adjust width to prevent long text from spilling */
@@ -245,7 +286,7 @@ body, html {
 }
 
 .request-table2 td {
-    font-size: 14px;    
+    font-size: 14px;
     color: #333;
 }
 
@@ -256,78 +297,6 @@ body, html {
 .request-table2 tr:hover {
     background-color: #f1f1f1;
 }
-
-
-
-
-
-
-/* Workload Section */
-.content-section2 {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%; /* Ensure it takes the full width */
-}
-
-.request-list-wrapper {
-    flex-grow: 8; /* Allow request list to take the majority of the available space */
-    width: 70%; /* Explicitly define 70% width for the request list */
-    margin-right: 5; /* Reduce margin to move workload closer */
-}
-
-.workload-wrapper {
-    flex-grow: 2; /* Allow workload section to take proportionally less space */
-    width: 30%; /* Explicitly define 30% width for the workload section */
-    min-width: 0px; /* Ensure minimum width for the workload section */
-    max-width: 280px; /* Slightly reduce max width for better balance */
-}
-
-.workload-section2 {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(10, 2, 2, 0.1);
-    padding: 10px;
-    height: calc(95vh - 240px); /* Match the height of the request list */
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-.workload-profile2 {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-
-
-.profile-pic-placeholder2 {
-    width: 40px;
-    height: 40px;
-    background-color: #1D2D50;
-    border-radius: 50%;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    margin-right: 10px;
-}
-
-.progress-bar2 {
-    width: 60%; /* You can adjust this as needed */
-    height: 5px;
-    background-color: #ddd;
-    border-radius: 6px;
-}
-
-.progress-bar-complete2 {
-    background-color: #28a745;
-    width: 70%; /* Consider making this dynamic */
-    height: 100%;
-}
-
-
 
 /* Modal and Lightbox Styling */
 .modal2, .overlay2 {
@@ -387,70 +356,30 @@ body, html {
     cursor: not-allowed;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .header-content2 {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .content-section2 {
-        flex-direction: column;
-        margin-left: 0;
-    }
-
-    .sidebar2 {
-        width: 100%;
-        position: relative;
-    }
-
-    .sidebar2 ul li {
-        text-align: center;
-    }
-
-    .workload-section2 {
-        width: 100%;
-    }
-
-    .request-list2 {
-        width: 100%;
-    }
-
-    .stat-container2 {
-        flex-direction: column;
-    }
-
-    .stat-box2 {
-        margin: 10px 0; /* Adjust margin for vertical stacking */
-    }
-
-    .assign-button2 {
-        width: 100%; /* Make the button full-width on smaller screens */
-    }
-}
-
+/* Modal Specific */
 .modal2 {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Full width of the viewport */
-    height: 100vh; /* Full height of the viewport */
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-    z-index: 1000; /* Ensure it appears on top of other content */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0; /* Remove any padding */
+    padding: 0;
 }
 
 .modal-content2 {
     background-color: white;
-    width: 100vw; /* Make the modal content cover the full viewport width */
-    height: 90vh; /* Make the modal content cover the full viewport height */
+    width: 90vw; /* Adjust to a percentage for better responsiveness */
+    max-width: 600px;
+    height: 90vh;
     padding: 20px;
-    border-radius: 0; /* Remove the border radius */
-    box-shadow: none; /* Remove the box shadow */
-    overflow-y: auto; /* Allows scrolling if the content exceeds the modal height */
+    border-radius: 12px;
+    box-shadow: none;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -465,7 +394,7 @@ body, html {
     border-collapse: collapse;
 }
 
-.modal-content2 table th, 
+.modal-content2 table th,
 .modal-content2 table td {
     padding: 12px 15px;
     border-bottom: 1px solid #ddd;
@@ -496,30 +425,110 @@ body, html {
 .close-modal-btn:hover {
     background-color: #c9302c;
 }
-.request-list {
-    /* Styles for request list container */
+
+/* Request Table Styling */
+.request-table2 {
+    width: 98%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.request-table2 th, .request-table2 td {
+    padding: 12px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    white-space: normal; /* Allow text wrapping */
+    word-break: break-word; /* Ensure long text breaks gracefully */
+}
+
+.request-table2 th:nth-child(1), /* REQID Column */
+.request-table2 td:nth-child(1) {
+    width: 10%; /* Slightly smaller for REQID */
+}
+
+.request-table2 th:nth-child(2), /* TIMESTAMP Column */
+.request-table2 td:nth-child(2) {
+    width: 15%;
+}
+.request-table2 th:nth-child(2) {
+    padding-left: 40px; /* Adjust the value as needed for spacing */
+}
+
+.request-table2 th:nth-child(3), /* Project Title Column */
+.request-table2 td:nth-child(3) {
+    width: 40%; /* Project title should have enough space */
+}
+.request-table2 th:nth-child(3) {
+    padding-left: 10px; /* Adjust the value as needed for spacing */
+}
+
+
+.request-table2 th:nth-child(4), /* Assigned To Column */
+.request-table2 td:nth-child(4) {
+    width: 8%; /* Adjust width for proper spacing */
+}
+.request-table2 th:nth-child(5) {
+    padding-left: 35px; /* Adjust the value as needed for spacing */
+}
+
+/* Status Column */
+.request-table2 th:nth-child(5), /* Status Column */
+.request-table2 td:nth-child(5) {
+    width: 138px; /* Adjust width for the Status column */
+}
+.request-table2 th:nth-child(5) {
+    padding-left: 35px; /* Adjust the value as needed for spacing */
+}
+
+.request-table2 th:nth-child(6), /* Status Column */
+.request-table2 td:nth-child(6) {
+    width: 138px; /* Adjust width for the Status column */
+}
+.request-table2 th:nth-child(6) {
+    padding-left: 29px; /* Adjust the value as needed for spacing */
+}
+
+.request-table2 th, .request-table2 td {
+    font-size: 14px;
+    color: #333;
+}
+
+.request-table2 th {
+    background-color: #1D2D50;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.request-table2 tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.request-table2 tr:hover {
+    background-color: #f1f1f1;
 }
 
 .search-and-pagination-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Ensure the elements align left */
     align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    width: 100%; /* Full width for parent container */
 }
 
-.search-input {
-    width: 500px;
-    max-width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.month-filter-pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .pagination-controls {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
+    justify-content: flex-start; /* Align pagination to the left */
+    width: auto; /* Ensure it doesn't take up full width */
 }
 
 .pagination-info {
@@ -539,9 +548,152 @@ body, html {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-btn:hover {
+    background-color: #003366;
 }
 
 .pagination-btn:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+/* Month Filter Dropdown */
+.month-filter-pagination {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Increase gap for breathing room */
+    justify-content: flex-start; /* Align it to the left */
+    width: auto; /* Ensure it doesn't take up the whole space */
+}
+
+.month-filter-pagination select {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    color: #333;
+    width: 150px; /* Set a specific width for the dropdown */
+    max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .dashboard-container2 {
+        padding-left: 200px; /* Reduce sidebar padding for smaller screens */
+    }
+
+    .header-left2 {
+        margin-left: 200px; /* Adjust left margin for smaller screens */
+    }
+
+    .stat-container2 {
+        width: calc(100% - 300px); /* Adjust width for status summary */
+        margin-left: 150px; /* Adjust margin */
+    }
+
+    .request-list2 {
+        margin-left: 20px; /* Reduce left margin */
+        width: calc(100% - 20px); /* Adjust width */
+    }
+
+    .search-input {
+        width: 300px; /* Shorten the search input */
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar2 {
+        width: 180px; /* Reduce sidebar width */
+    }
+
+    .dashboard-container2 {
+        padding-left: 180px; /* Adjust for smaller sidebar */
+    }
+
+    .header-left2 {
+        margin-left: 180px; /* Adjust left margin */
+    }
+
+    .stat-container2 {
+        width: calc(100% - 250px); /* Further adjust width */
+        margin-left: 130px; /* Adjust left margin */
+    }
+
+    .content-section2 {
+        flex-direction: column; /* Stack content vertically */
+    }
+
+    .request-list2 {
+        margin-left: 10px; /* Reduce left margin */
+        width: calc(100% - 10px); /* Full width minus margin */
+    }
+
+    .search-input {
+        width: 250px; /* Adjust search input */
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar2 {
+        display: none; /* Hide sidebar on smaller screens */
+    }
+
+    .dashboard-container2 {
+        padding-left: 0; /* Remove sidebar padding */
+    }
+
+    .header-left2 {
+        margin-left: 0; /* Remove left margin */
+        justify-content: center; /* Center header content */
+    }
+
+    .stat-container2 {
+        width: 100%; /* Full width for status summary */
+        margin-left: 0; /* No left margin */
+    }
+
+    .request-list2 {
+        margin-left: 0; /* No left margin */
+        width: 100%; /* Full width */
+    }
+
+    .search-input {
+        width: 100%; /* Full width for search input */
+    }
+}
+
+/* Additional Breakpoints for Smaller Screens */
+@media (max-width: 576px) {
+    .header-content2 h1 {
+        font-size: 20px; /* Reduce font size for smaller screens */
+    }
+
+    .stat-box2 {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .request-table2 th, .request-table2 td {
+        padding: 10px; /* Reduce padding for smaller screens */
+    }
+
+    .pagination-controls {
+        gap: 10px; /* Decrease gap for smaller screens */
+    }
+
+    .pagination-btn {
+        padding: 6px 8px; /* Smaller buttons */
+    }
+
+    .modal-content2 {
+        padding: 15px;
+        height: 80vh; /* Reduce height for smaller screens */
+    }
+
+    .close-modal-btn {
+        padding: 8px 12px; /* Adjust close button */
+    }
 }

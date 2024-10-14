@@ -8,6 +8,9 @@ function CarylDashboard() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+  const requestsPerPage = 5; // Maximum requests per page
   const teamMember = "Caryl Apa"; // Define the team member's name
 
   // Fetch requests assigned to the specific team member
@@ -28,18 +31,34 @@ function CarylDashboard() {
     fetchRequests();
   }, [teamMember]);
 
+  // Function to get the month number from the month name
+  const getMonthNumber = (monthName) => {
+    const months = {
+      January: 0, February: 1, March: 2, April: 3,
+      May: 4, June: 5, July: 6, August: 7,
+      September: 8, October: 9, November: 10, December: 11
+    };
+    return months[monthName];
+  };
+
   // Handle status update of requests
-  const handleStatusChange = async (requestId, newStatus) => {
-    if (newStatus === 2 && !selectedRequest.fileUrl) {
+  const handleStatusChange = async (requestId, newStatus, fileUrl) => {
+    if (newStatus === 2 && !fileUrl) {
       alert('You cannot mark this request as completed without an evaluator file.');
       return; // Exit early if evaluator file is not uploaded
     }
+
+    // Capture the current date if the status is marked as "Completed"
+    const completedAt = newStatus === 2 ? new Date().toISOString() : null;
 
     try {
       const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({
+          status: newStatus,
+          completedAt: completedAt, // Send the completion date if completed
+        }),
       });
       if (!response.ok) throw new Error('Failed to update status');
 
@@ -76,24 +95,24 @@ function CarylDashboard() {
       const formData = new FormData();
       formData.append('file', uploadedFile);
       formData.append('requestId', selectedRequest._id);
-  
+
       try {
         const response = await fetch('http://localhost:5000/api/upload', {
           method: 'POST',
           body: formData,  // Note that this sends the file as 'multipart/form-data'
         });
-  
+
         if (!response.ok) {
           const errorMessage = await response.text();
           console.error('Error response from server:', errorMessage);
           throw new Error('Failed to upload file');
         }
-  
+
         const updatedRequest = await response.json();
         setRequests(prevRequests =>
           prevRequests.map(req => req._id === updatedRequest._id ? updatedRequest : req)
         );
-  
+
         alert('File uploaded successfully!');
         closeModal();
       } catch (error) {
@@ -134,6 +153,28 @@ function CarylDashboard() {
     }
   };
 
+  // Filter requests based on the selected month
+  const filteredRequests = requests.filter(req => {
+    if (!selectedMonth) return true; // If no month is selected, return all requests
+
+    const requestDate = new Date(req.timestamp);
+    const requestMonth = requestDate.getMonth(); // Get the month (0-11)
+
+    return requestMonth === getMonthNumber(selectedMonth);
+  });
+
+  // Calculate current page requests
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+
+  // Pagination controls
+  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
+
+  // Handle page navigation
+  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
   // Loading state while fetching requests
   if (loading) return <div className="loading">Loading requests...</div>;
   if (error) return (
@@ -147,15 +188,15 @@ function CarylDashboard() {
       {/* Status summary */}
       <div className="status-summary4">
         <div className="status-box4">
-          <span className="status-value4">{requests.length}</span>
+          <span className="status-value4">{filteredRequests.length}</span>
           <h3>Total Requests</h3>
         </div>
         <div className="status-box4">
-          <span className="status-value4">{requests.filter(req => req.status === 1).length}</span>
+          <span className="status-value4">{filteredRequests.filter(req => req.status === 1).length}</span>
           <h3>Open Requests</h3>
         </div>
         <div className="status-box4">
-          <span className="status-value4">{requests.filter(req => req.status === 2).length}</span>
+          <span className="status-value4">{filteredRequests.filter(req => req.status === 2).length}</span>
           <h3>Closed Requests</h3>
         </div>
       </div>
@@ -174,6 +215,25 @@ function CarylDashboard() {
       {/* Table displaying the list of requests */}
       <div className="table-container4">
         <h3>List of Requests</h3>
+        {/* Month filter dropdown */}
+        <div className="month-filter-container">
+          <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+            <option value="">All Months</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+          </select>
+        </div>
+
         <table className="request-table4">
           <thead>
             <tr>
@@ -181,11 +241,12 @@ function CarylDashboard() {
               <th>TIMESTAMP</th>
               <th>PROJECT TITLE</th>
               <th>STATUS</th>
+              <th>DATE COMPLETED</th> {/* Add the "Date Completed" column */}
             </tr>
           </thead>
           <tbody>
-            {requests.length > 0 ? (
-              requests.filter(req => req.assignedTo === teamMember).map(req => (
+            {currentRequests.length > 0 ? (
+              currentRequests.map(req => (
                 <tr key={req._id} onClick={() => openModal(req)}>
                   <td>{req.referenceNumber}</td>
                   <td>{req.timestamp}</td>
@@ -193,22 +254,33 @@ function CarylDashboard() {
                   <td>
                     <select
                       value={req.status}
-                      onChange={(e) => handleStatusChange(req._id, Number(e.target.value))}
+                      onChange={(e) => handleStatusChange(req._id, Number(e.target.value), req.fileUrl)}  // Pass the fileUrl here
+                      onClick={(e) => e.stopPropagation()}  
                     >
                       <option value={0}>Pending</option>
                       <option value={1}>Ongoing</option>
-                      <option value={2} disabled={!req.fileUrl}>Completed</option> {/* Disable if no file uploaded */}
+                      <option value={2} disabled={!req.fileUrl}>Completed</option>
                     </select>
                   </td>
+                  <td>{req.completedAt ? new Date(req.completedAt).toLocaleDateString() : 'N/A'}</td> {/* Show the completed date */}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4">No requests assigned to you</td>
+                <td colSpan="5">No requests assigned to you</td>
               </tr>
             )}
           </tbody>
         </table>
+
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button onClick={prevPage} disabled={currentPage === 1}>Previous</button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button onClick={nextPage} disabled={currentPage === totalPages}>Next</button>
+          </div>
+        )}
       </div>
 
       {/* Modal for viewing and uploading files */}
@@ -262,7 +334,6 @@ function CarylDashboard() {
                   <th>Special Instructions</th>
                   <td>{selectedRequest.specialInstructions}</td>
                 </tr>
-                {/* From Requester Section */}
                 {selectedRequest.requesterFileUrl && (
                   <tr>
                     <th>From Requester:</th>
