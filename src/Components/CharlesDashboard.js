@@ -17,8 +17,17 @@ function CharlesDashboard() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+<<<<<<< HEAD
         const response = await fetch(`http://localhost:5000/api/requests?assignedTo=${teamMember}`);
         if (!response.ok) throw new Error('Failed to fetch requests');
+=======
+        const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests?assignedTo=${teamMember}`, {
+          mode: 'cors',
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch requests');
+        }
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
         const data = await response.json();
         setRequests(data);
       } catch (err) {
@@ -42,7 +51,7 @@ function CharlesDashboard() {
     const completedAt = newStatus === 2 ? new Date().toISOString() : null;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
+      const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

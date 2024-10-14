@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './RequesterDashboard.css'; // Custom CSS file for styling
 import { FaUsers, FaShoppingCart, FaBox } from 'react-icons/fa'; // Icons for cards
 
@@ -40,35 +40,45 @@ function RequesterDashboard() {
   const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', 'Proposal Approval', 'Design and Estimates', 'Program of Works', 'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works', 'Project Evaluation, Request for Quotation', 'Design and Estimates, Program of Works', 'Request for Quotation, Design and Estimates', 'Project Evaluation, Request for Quotation, Design and Estimates', 'Proposal Approval, Design and Estimates, Detailed Estimates of the Project', 'Request for Quotation, Design and Estimates, Product Presentation', 'Product Presentation', 'PVSYST Report', 'Electrical Diagram', 'Pricelist', 'Detailed Cost Estimates of the Project - total amount should match the selling price', 'Project Evaluation, Design and Estimates', 'Proposal Approval, Design and Estimates', 'Roofing Layout', 'Roofing Layout, Electrical Diagram', 'Schematic Diagram for Solar', 'Load Profiling', 'Data Sheet or Specification'];
 
   const typeOfClient = ['Private', 'Government'];
+<<<<<<< HEAD
 
   // Fetch all requests when the component mounts
   useEffect(() => {
     fetchRequests();
     loadRequestsFromLocalStorage();
   }, []);
+=======
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
-      setLoading(true); // Set loading state
-      const response = await fetch('http://localhost:5000/api/requests');
+      setLoading(true); // Set loading state to true
+      const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests');
+      
       if (!response.ok) {
         throw new Error('Failed to fetch requests');
       }
+  
       const data = await response.json();
       setRequests(data); // Set fetched requests in the state
       saveRequestsToLocalStorage(data); // Save fetched requests to local storage
-      setLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       setError(error.message); // Set error if there's a problem with the fetch
-      setLoading(false); // Stop loading on error
+    } finally {
+      setLoading(false); // Ensure loading is stopped after try/catch
     }
-  };
-
-  const loadRequestsFromLocalStorage = () => {
+  }, []);
+  
+  const loadRequestsFromLocalStorage = useCallback(() => {
     const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
-    setRequests(storedRequests);
-    setLoading(false); // Stop loading after loading from local storage
-  };
+    setRequests(storedRequests); // Load requests from local storage into state
+  }, []);
+
+  // Using useEffect to fetch requests and load from local storage on mount
+  useEffect(() => {
+    fetchRequests();
+    loadRequestsFromLocalStorage();
+  }, [fetchRequests, loadRequestsFromLocalStorage]);
 
   const saveRequestsToLocalStorage = (requestsToSave) => {
     localStorage.setItem('requests', JSON.stringify(requestsToSave));
@@ -165,7 +175,7 @@ function RequesterDashboard() {
     if (validateForm()) {
       try {
         // Step 1: Create the request first (without file data)
-        const response = await fetch('http://localhost:5000/api/requests', {
+        const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
@@ -182,8 +192,13 @@ function RequesterDashboard() {
           const formData = new FormData();
           formData.append('file', selectedFile); // Attach the selected file
           formData.append('requestId', newRequest._id); // Attach the newly created request ID
+<<<<<<< HEAD
 
           const uploadResponse = await fetch('http://localhost:5000/api/requester/upload', {
+=======
+  
+          const uploadResponse = await fetch('https://backend-test-u9zl.onrender.com/api/requester/upload', {
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
             method: 'POST',
             body: formData, // Send the file and requestId as FormData
           });
@@ -243,7 +258,7 @@ function RequesterDashboard() {
   
   const downloadFile = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`http://localhost:5000${fileUrl}`, {
+      const response = await fetch(`https://backend-test-u9zl.onrender.com${fileUrl}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/pdf', // Adjust this according to your file type

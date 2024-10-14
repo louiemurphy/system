@@ -16,7 +16,7 @@ function VincentDashboard() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/requests?assignedTo=${teamMember}`, {
+        const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests?assignedTo=${teamMember}`, {
           mode: 'cors',
         });
         if (!response.ok) {
@@ -43,7 +43,7 @@ function VincentDashboard() {
     const completedAt = newStatus === 2 ? new Date().toISOString() : null;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
+      const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${requestId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -213,6 +213,7 @@ function AdminDashboard() {
 
   const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata', 'Tristan Chua', 'Jay-R'];
 
+<<<<<<< HEAD
   const getMonthNumber = (month) => {
     const months = {
       January: 1,
@@ -227,16 +228,77 @@ function AdminDashboard() {
       October: 10,
       November: 11,
       December: 12,
+=======
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests', { mode: 'cors' });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests');
+                }
+                const data = await response.json();
+                setRequests(data);
+                setLoading(false);
+            } catch (err) {
+                setError(err.message);
+                setLoading(false);
+            }
+        };
+
+        fetchRequests();
+    }, []);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const openOverlay = (request) => {
+        setSelectedRequest(request);
+        setOverlayVisible(true);
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
     };
     return months[month];
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/requests', { mode: 'cors' });
         if (!response.ok) {
           throw new Error('Failed to fetch requests');
+=======
+    const closeOverlay = () => {
+        setOverlayVisible(false);
+        setSelectedRequest(null);
+        setSelectedTeamMember('');
+    };
+
+    const handleSave = async () => {
+        if (selectedTeamMember) {
+            const updatedRequests = requests.map((request) =>
+                request._id === selectedRequest._id ? { ...request, assignedTo: selectedTeamMember } : request
+            );
+            setRequests(updatedRequests);
+
+            try {
+                const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${selectedRequest._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ assignedTo: selectedTeamMember }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update request on the server');
+                }
+
+                closeOverlay();
+            } catch (err) {
+                console.error('Error updating request:', err);
+            }
+        } else {
+            alert('Please select a team member!');
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
         }
         const data = await response.json();
         setRequests(data);
@@ -247,10 +309,76 @@ function AdminDashboard() {
       }
     };
 
+<<<<<<< HEAD
     // Retrieve the saved page number from localStorage
     const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
       setCurrentPage(Number(savedPage)); // Set the current page to the saved value
+=======
+    const handleStatusChange = async (requestId, newStatus) => {
+        try {
+            const updatedRequests = requests.map((request) =>
+                request._id === requestId ? { ...request, status: newStatus } : request
+            );
+            setRequests(updatedRequests);
+
+            const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update request status');
+            }
+        } catch (err) {
+            console.error('Error updating status:', err);
+        }
+    };
+
+    const openModal = (request) => {
+        setSelectedRequest(request);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedRequest(null);
+    };
+
+    const downloadFile = async (fileUrl, fileName) => {
+        try {
+            const response = await fetch(`https://backend-test-u9zl.onrender.com${fileUrl}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf', // Adjust this according to your file type
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+            }
+
+            const blob = await response.blob(); // Get the response as a Blob
+            const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL
+
+            // Create an anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', fileName); // Set the download attribute with the file name
+            document.body.appendChild(link);
+            link.click(); // Programmatically click the link to download the file
+            link.remove(); // Clean up the link
+
+            window.URL.revokeObjectURL(downloadUrl); // Free up memory after download
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+
+    if (loading) {
+        return <div>Loading requests...</div>;
+>>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
     }
 
     fetchRequests();
