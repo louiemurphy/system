@@ -1,3 +1,4 @@
+/* Global Styling */
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +9,7 @@ body, html {
     width: 100%;
     height: 100%;
     font-family: 'Roboto', sans-serif;
-    background-color: #f4f7fc; /* Light gray background */
+    background-color: #f4f7fc;
 }
 
 /* Dashboard Container */
@@ -21,9 +22,10 @@ body, html {
     background-color: #f4f7fc;
 }
 
+/* Dashboard Header */
 .dashboard-header {
     text-align: center;
-    background-color: #1D2D50; /* Dark blue header */
+    background-color: #1D2D50;
     color: white;
     padding: 20px;
     border-radius: 10px;
@@ -33,129 +35,35 @@ body, html {
     box-sizing: border-box;
 }
 
-/* Fullscreen Section */
-.fullscreen-section {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
+/* Top Metrics (Cards for Total Request, Open, Closed) */
+.top-metrics {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f4f7fc; /* Light gray background */
-    padding: 20px; /* Padding around the section to ensure space */
-    box-sizing: border-box;
-}
-
-/* Fullscreen Form Container */
-.fullscreen-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 100%; /* Take full width of the screen */
-    max-width: 1200px; /* Set a maximum width for large screens */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-    height: auto; /* Allow content to expand */
-}
-
-/* Request Form Layout */
-.request-form {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two-column grid */
-    gap: 20px; /* Spacing between form fields */
-    width: 100%; /* Full width */
-    margin: auto;
-    padding: 10px 0;
-}
-
-/* Responsive Fullscreen Layout */
-@media (max-width: 768px) {
-    .fullscreen-content {
-        width: 100%; /* Full width on small screens */
-        padding: 20px;
-    }
-
-    .request-form {
-        grid-template-columns: 1fr; /* Stack form fields on small screens */
-        max-width: 100%;
-    }
-}
-
-/* Button Styles */
-.submit-btn {
-    padding: 10px 15px;
-    background-color: #1D2D50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    grid-column: span 2; /* Span submit button across the entire form width */
-}
-
-.submit-btn:hover {
-    background-color: #142039;
-}
-
-/* Close Button (if necessary) */
-.close-modal-btn {
-    background-color: transparent;
-    color: #e74c3c;
-    padding: 8px;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    transition: color 0.3s ease;
-}
-
-.close-modal-btn:hover {
-    color: #c0392b;
-}
-
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px; /* Space between form fields */
-    position: relative;
+    justify-content: space-between;
+    margin-bottom: 20px;
     width: 100%;
+    max-width: 100vw; /* Adjusted to fit screen size */
 }
 
-/* Modal Responsiveness */
-@media (max-width: 768px) {
-    .modal2-content {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-    }
-
-    .request-form {
-        grid-template-columns: 1fr;
-        max-width: 100%;
-    }
-}
-
-/* Card Styling */
 .card {
     flex: 1;
     background-color: white;
     border-radius: 10px;
-    padding: 20px;
+    padding: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin: 10px;
+    margin: 5px; /* Reduced margin for compactness */
+    text-align: center;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
+    min-width: 100px; /* Ensure minimum width at small zoom levels */
 }
 
 .card:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 24px;
+    color: #1D2D50;
 }
 
 /* Sidebar Styling */
@@ -169,41 +77,7 @@ body, html {
     left: 0;
     overflow: auto;
     transition: width 0.3s ease;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-}
-
-.sidebar-header {
-    padding: 20px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #ecf0f1;
-    border-bottom: 1px solid #34495e;
-}
-
-.sidebar-menu {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar-menu li {
-    padding: 15px 20px;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border-bottom: 1px solid #34495e;
-}
-
-.sidebar-menu li:hover {
-    background-color: #34495e;
-    color: #ecf0f1;
-    padding-left: 25px;
-}
-
-.sidebar-menu li.active {
-    background-color: #1abc9c;
-    color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .main-content {
@@ -213,86 +87,142 @@ body, html {
     transition: margin-left 0.3s ease;
 }
 
-.top-metrics {
+.table-container {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 10px;
-}
-
-.card {
-    background-color: #ecf0f1;
-    border-radius: 5px;
+    flex-direction: column;
+    gap: 10px;
     padding: 20px;
-    text-align: center;
-    width: 30%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+    max-height: 70vh; /* Adjust this value */
+    overflow-y: auto; /* Allow vertical scrolling */
 }
 
-.card-icon {
-    font-size: 24px;
-    color: #1D2D50; /* Match the primary color */
+@media (max-width: 768px) {
+    .table-container {
+        max-height: 50vh; /* Adjust for smaller screens */
+    }
 }
+
 
 .request-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Ensures columns have fixed widths */
+    table-layout: fixed;
+    
 }
 
-.request-table th,
-.request-table td {
+.request-table th, .request-table td {
     border: 1px solid #ddd;
-    padding: 12px 8px;
+    padding: 12px 15px;
     text-align: left;
-    word-wrap: break-word; /* Enable word wrapping */
-    white-space: normal; /* Allow text to break into the next line */
+    word-wrap: break-word;
+    
 }
 
-/* Header styles */
 .request-table th {
-    background-color: #1D2D50; /* Dark blue */
+    background-color: #1D2D50;
     color: white;
     font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.request-table td {
+    font-size: 13px;
+    overflow-wrap: break-word;
 }
 
 /* Adjusting column widths */
 .request-table th:nth-child(1),
 .request-table td:nth-child(1) {
-    width: 5%; /* REQID column width */
+    width: 7%; /* Adjust width based on content importance */
 }
 
 .request-table th:nth-child(2),
 .request-table td:nth-child(2) {
-    width: 9%; /* Name column width */
+    width: 12%;
 }
 
 .request-table th:nth-child(3),
 .request-table td:nth-child(3) {
-    width: 12%; /* Timestamp column */
+    width: 12%; /* Increase width for Project Title */
 }
 
 .request-table th:nth-child(4),
 .request-table td:nth-child(4) {
-    width: 43%; /* Project Title column with more space */
+    width: 30%;
 }
 
 .request-table th:nth-child(5),
 .request-table td:nth-child(5) {
-    width: 13%; /* Assigned To column width */
+    width: 12%;
 }
 
 .request-table th:nth-child(6),
 .request-table td:nth-child(6) {
-    width: 10%; /* Status column width */
+    width: 8%;
+}
+.request-table th:nth-child(7),
+.request-table td:nth-child(7) {
+    width: 15%;
 }
 
-/* Optional row hover effect for interactivity */
-.request-table tr:hover {
-    background-color: #f2f2f2; /* Light grey on hover */
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .table-container {
+        padding: 15px;
+    }
+
+    .top-metrics {
+        flex-wrap: wrap;
+    }
+
+    .card {
+        min-width: 45%; /* Reduce the minimum size */
+    }
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        padding: 10px;
+    }
+
+    .top-metrics {
+        flex-direction: column; /* Stack cards vertically */
+        align-items: center;
+    }
+
+    .card {
+        width: 100%; /* Full width on small screens */
+        margin: 5px 0;
+    }
+}
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px; /* Reduced margin to remove extra spacing */
+    gap: 10px; /* Reduce spacing between elements */
 }
 
 
-.edit-btn {
+/* Pagination Controls */
+.pagination-controls1 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination-btn {
     background-color: #1D2D50;
     color: white;
     border: none;
@@ -301,376 +231,391 @@ body, html {
     cursor: pointer;
 }
 
-.edit-btn:hover {
-    background-color: #0f1a30;
+.pagination-btn:disabled {
+    background-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
 }
 
-/* Create Request Button */
-.create-request-btn {
-    background-color: #1D2D50;
+.pagination-info {
+    font-size: 16px;
+}
+
+/* Modal and Overlay Styling */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+/* Modal Content - Full-width design */
+.modal-content {
+    background-color: white;
+    width: 100vw !important;
+    max-width: none !important;
+    height: auto;
+    max-height: 100vh;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow-y: auto;
+}
+
+/* Modal Header */
+.modal-header {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0a2540;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Modal Table Styling */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* Table Header Cells */
+.modal-table th {
+    font-weight: bold;
+    color: #071421;
+    padding: 8px 10px;
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+/* Table Data Cells */
+.modal-table td {
+    color: #555;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    word-wrap: break-word;
+    vertical-align: middle;
+}
+
+/* Table Row Colors */
+.modal-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover Effect */
+.modal-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Button Styling */
+.modal-table button {
+    background-color: #1db954;
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 6px 10px;
+    font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    float: right;
-    margin-right: 20px;
-    margin-top: 65px;
-    position: relative;
-  z-index: 100; /* Ensure it's above other elements */
+    color: black;
 }
 
-.create-request-btn:hover {
-    background-color: #0f1a30;
+.modal-table button:hover {
+    background-color: #17a84b;
 }
 
-/* Pagination Button */
-.button {
-    background-color: #1D2D50;
+/* Close Button */
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #0a2540;
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 8px 12px;
+    font-size: 12px;
     border-radius: 5px;
-    font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
-.button:hover {
-    background-color: #0f1a30;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.close-modal-btn:hover {
+    background-color:#1b3a61;
 }
 
-.form-section {
-    margin: 20px;
+/* Fullscreen Section for Form */
+.fullscreen-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
 }
 
-.back-btn {
-    margin-bottom: 20px;
-}
-
-.request-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.fullscreen-content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 1000px;
+    overflow-y: auto;
+    max-height: 90vh;
 }
 
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.form-group {
-    width: 100%;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.required {
-    color: red;
-}
-
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-input.error,
-select.error,
-textarea.error {
-    border-color: red;
-}
-
-.error-text {
-    color: red;
-    font-size: 12px;
-    position: absolute;
-    bottom: -35px; /* Adjust this value to move the error below the input field */
-    left: 0;
-    width: 100%; /* Ensures the message spans the entire width */
-    text-align: left; /* Align text to the left */
-}
-.submit-btn {
-    background-color: #3498db;
+/* Close Button */
+.close-modal-btn {
+    display: inline-block;
+    background-color: #d9534f;
     color: white;
-    padding: 12px 20px;
     border: none;
+    padding: 10px 15px;
+    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.submit-btn:hover {
-    background-color: #2980b9;
-}
-
-
-
-/* Close button */
-.close-modal-btn {
-    background-color: transparent; /* Transparent background for icon button */
-    color: #e74c3c; /* Professional red color */
-    padding: 8px;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    transition: color 0.3s ease;
     position: absolute;
     top: 20px;
     right: 20px;
 }
 
 .close-modal-btn:hover {
-    color: #c0392b; /* Darker red on hover */
+    background-color: #c9302c;
 }
 
-.modal-header {
-    font-size: 24px; /* Larger header for emphasis */
-    margin-bottom: 25px;
-    color: #2c3e50; /* Darker text color for the header */
+/* Form Styles */
+.request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
     font-weight: bold;
-    text-align: center; /* Center the header */
-    border-bottom: 2px solid #ecf0f1; /* Subtle bottom border for separation */
-    padding-bottom: 15px;
-}
-
-/* Form Inputs (if necessary in the modal) */
-input,
-textarea,
-select {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    margin-bottom: 16px;
-    border: 1px solid #dcdcdc;
-    border-radius: 5px;
-    font-size: 15px;
-    color: #2c3e50;
-    transition: border 0.3s ease-in-out;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: #3498db; /* Blue border on focus */
-    box-shadow: 0 0 8px rgba(52, 152, 219, 0.1); /* Soft glow on focus */
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .modal-content {
-        width: 95%; /* Full width for smaller devices */
-        height: auto;
-        padding: 20px;
-        max-height: 90vh; /* Still prevent overflow */
-    }
-
-    .modal-header {
-        font-size: 20px; /* Slightly smaller header for small screens */
-    }
-
-    .modal-table {
-        font-size: 13px; /* Smaller text for smaller devices */
-    }
-
-    .close-modal-btn {
-        font-size: 16px;
-    }
-}
-
-    .name-filter {
-  margin-left: 6px;
-  padding: 5px;
-  font-size: 14px;
-  width: 200px;
-}
-
-.table2 {
-    margin-left: 10px;
-    text-align: left;
-}
-.pagination-controls1 {
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    margin-top: 20px;
-  }
-  
-  .pagination-info {
+    margin-bottom: 8px;
     font-size: 16px;
-    margin-right: 10px;
-  }
-  
-  .pagination-buttons {
-    display: flex;
-    align-items: center;
-  }
-  
-  .pagination-btn {
-    background-color: #f0f0f0;
     color: #333;
-    border: none;
-    padding: 8px 12px;
-    margin: 0 2px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .pagination-btn:disabled {
-    background-color: #ddd;
-    color: #999;
-    cursor: not-allowed;
-  }
-  
-  .pagination-btn:not(:disabled) {
-    background-color: #0e3352;
-    color: white;
-  }
-  
-  .pagination-btn:hover:not(:disabled) {
-    background-color: #0a2a45;
-  }
-  
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    z-index: 1000; /* Ensure it's above other content */
-  }
-  
-  .modal-content {
-    background-color: white;
-    width: 90%; /* Adjust as needed */
-    height: 90%; /* Adjust as needed */
-    overflow-y: auto; /* Scroll if content overflows */
-    padding: 20px; /* Add some padding */
-    border-radius: 8px; /* Optional: rounded corners */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  }
-
-  .modal-table {
-    width: 100%; /* Full width */
-    border-collapse: collapse; /* Collapse borders */
-    margin-top: 20px; /* Space above the table */
-  }
-  
-  .modal-table th,
-  .modal-table td {
-    padding: 10px; /* Padding for cells */
-    border: 1px solid #ccc; /* Light gray border */
-    text-align: left; /* Align text to the left */
-  }
-  
-  .modal-table th {
-    background-color: #f4f4f4; /* Light gray background for header */
-    font-weight: bold; /* Bold text for headers */
-  }
-  
-  .modal-table tr:nth-child(even) {
-    background-color: #f9f9f9; /* Alternate row color */
-  }
-  
-  .modal-table tr:hover {
-    background-color: #e9e9e9; /* Highlight row on hover */
-  }
-  
-  /* Filter container to align both dropdowns side by side */
-.filter-container {
-    display: flex;
-    gap: 15px; /* Space between the filters */
-    align-items: center;
-    justify-content: flex-start;
-  }
-  
-  .name-filter, .month-filter {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    color: #333;
-  }
-  
-  .name-filter {
-    min-width: 200px; /* Set minimum width for the name filter */
-  }
-  
-  .month-filter {
-    min-width: 150px; /* Set minimum width for the month filter */
-  }
-
-  /* Adjust filter container layout */
-.filter-container {
-    display: flex;
-    gap: 10px; /* Space between the filters */
-    align-items: center;
-    justify-content: flex-start;
 }
 
-.name-filter, .month-filter {
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    color: #333;
-    max-width: 160px; /* Ensure the dropdowns are more compact */
-    width: auto; /* Adjust to auto-width */
-}
-
-.name-filter {
-    width: 160px; /* Specific width for All Users dropdown */
-}
-
-.month-filter {
-    width: 140px; /* Specific width for All Months dropdown */
-}
 .form-group input,
 .form-group select,
 .form-group textarea {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 5px; /* Space between the input field and error message */
+    transition: border-color 0.3s ease;
 }
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #1D2D50;
+    border-color: #007BFF;
     outline: none;
-    box-shadow: 0 0 3px rgba(29, 45, 80, 0.2);
 }
 
-/* Add some margin for the error message to push inputs and prevent overlap */
-.error {
-    margin-bottom: 15px;
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.form-group input[type="file"] {
+    padding: 5px;
+}
+
+.input-error {
+    border-color: #d9534f;
+}
+
+.error-text {
+    color: #d9534f;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Form Grid Style */
+.form-group-half {
+    width: 48%;
+}
+
+.form-group-full {
+    width: 100%;
+}
+
+/* Required Field Marker */
+.required {
+    color: #d9534f;
+    margin-left: 5px;
+}
+
+/* Submit Button */
+.submit-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .top-metrics {
+        flex-wrap: wrap; /* Stack cards vertically on smaller screens */
+    }
+
+    .card {
+        width: 100%; /* Full width for cards on smaller screens */
+        margin-bottom: 15px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .table-container {
+        width: 100%; /* Use full screen width */
+        padding: 10px; /* Reduce padding */
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .filter-container, .pagination-controls1 {
+        flex-wrap: wrap;
+    }
+
+    .name-filter, .month-filter {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .top-metrics {
+        flex-direction: column; /* Stack the top metrics vertically */
+    }
+
+    .request-table {
+        width: 100%; /* Ensure table takes up full width */
+        border-collapse: collapse;
+        table-layout: fixed; /* Ensure consistent column widths */
+    }
+    
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        width: 90vw;
+        padding: 10px;
+    }
+
+    .modal-header {
+        font-size: 18px;
+    }
+
+    .modal-table th, .modal-table td {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .pagination-btn {
+        font-size: 12px;
+    }
+
+    .top-metrics {
+        flex-direction: column; /* Stack metrics on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .table-container {
+        padding: 5px;
+    }
+
+    .request-table th, .request-table td {
+        padding: 10px; /* Adjust padding */
+        font-size: 12px; /* Adjust font size for compactness */
+    }
+    
+
+    .modal-header {
+        font-size: 16px;
+    }
+}
+.name-filter {
+    width: 180px; /* Adjusted width for name filter */
+}
+.month-filter {
+    width: 160px; /* Adjusted width for month filter */
+}
+
+.filter-container {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    gap: 15px; /* Space between select elements */
+}
+
+.name-filter,
+.month-filter {
+    padding: 10px; /* Inner padding */
+    border: 1px solid #0c0b0b; /* Border styling */
+    border-radius: 5px; /* Rounded corners */
+    background-color: #fff; /* Background color */
+    font-size: 14px; /* Font size */
+    color: #090909; /* Text color */
+    cursor: pointer; /* Change cursor on hover */
+    transition: border-color 0.3s; /* Smooth transition for border color */
+}
+
+/* Focus and Hover Effects */
+.name-filter:focus,
+.month-filter:focus {
+    border-color: #1D2D50; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+}
+
+.name-filter:hover,
+.month-filter:hover {
+    border-color: #888; /* Change border color on hover */
 }

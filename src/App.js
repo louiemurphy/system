@@ -3,16 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Components/Login';
 import RequesterDashboard from './Components/RequesterDashboard';
 import AdminDashboard from './Components/AdminDashboard';
-import CharlesDashboard from './Components/CharlesDashboard';
-import CarylDashboard from './Components/CarylDashboard';
-import PatrickDashboard from './Components/PatrickDashboard';
-import VincentDashboard from './Components/VincentDashboard';
-import JayDashboard from './Components/JayDashboard';
-import RodelDashboard from './Components/RodelDashboard';
-import TristanDashboard from './Components/TristanDashboard';
-import AllProfiles from './Components/AllProfiles'; // Import the AllProfiles component
-import Dashboard from './Components/Dashboard'; // Import the Dashboard component
-
+import EvaluatorDashboard from './Components/EvaluatorDashboard';
+import AllProfiles from './Components/AllProfiles';
+import Dashboard from './Components/Dashboard';
+import AllRequests from './Components/AllRequests'; // Import the AllRequests component
 
 function App() {
   return (
@@ -34,14 +28,11 @@ function App() {
           {/* All profiles page */}
           <Route path="/profiles" element={<AllProfiles />} /> 
 
-          {/* Routes for each evaluator */}
-          <Route path="/dashboard/evaluator/charles" element={<CharlesDashboard />} />
-          <Route path="/dashboard/evaluator/caryl" element={<CarylDashboard />} />
-          <Route path="/dashboard/evaluator/patrick" element={<PatrickDashboard />} />
-          <Route path="/dashboard/evaluator/vincent" element={<VincentDashboard />} />
-          <Route path="/dashboard/evaluator/jay" element={<JayDashboard />} />
-          <Route path="/dashboard/evaluator/rodel" element={<RodelDashboard />} />
-          <Route path="/dashboard/evaluator/tristan" element={<TristanDashboard />} />
+          {/* All requests page */}
+          <Route path="/all-requests" element={<AllRequests />} />
+
+          {/* Consolidated route for all evaluators */}
+          <Route path="/dashboard/evaluator/:evaluatorId" element={<EvaluatorDashboard />} />
         </Routes>
       </div>
     </Router>

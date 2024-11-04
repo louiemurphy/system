@@ -4,13 +4,14 @@ import Sidebar from './Sidebar';
 
 
 
+
 // Header Component
 function HeaderSection({ requests }) {
   return (
     <header className="header-section2">
       <div className="header-content2">
         <div className="header-left2">
-          <h1>TECHNICAL SUPPORT GROUP</h1>
+          <h1>ADMIN DASHBOARD</h1>
         </div>
         <div className="header-right2">
           <p>Last Request Added: {requests[requests.length - 1]?.timestamp || 'N/A'}</p>
@@ -123,76 +124,83 @@ function RequestList({
             <option value="November">November</option>
             <option value="December">December</option>
           </select>
+          <div className="pagination-controls">
+  <span className="pagination-info">
+    {currentPage}-{totalPages}
+  </span>
+  <div className="pagination-buttons">
+    <button
+      className="pagination-btn"
+      onClick={handlePreviousPage}
+      disabled={currentPage === 1}
+    >
+      &lt;
+    </button>
+    <button
+      className="pagination-btn"
+      onClick={handleNextPage}
+      disabled={currentPage === totalPages}
+    >
+      &gt;
+    </button>
+  </div>
+</div>
         </div>
       </div>
-      <div className="pagination-controls">
-        <span className="pagination-info">
-          {currentPage}-{totalPages}
-        </span>
-        <div className="pagination-buttons">
-          <button
-            className="pagination-btn"
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-          >
-            &lt;
-          </button>
-          <button
-            className="pagination-btn"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-          >
-            &gt;
-          </button>
-        </div>
-      </div>
-      <table className="request-table2">
-        <thead>
-          <tr>
-            <th>REQID</th>
-            <th>TIMESTAMP</th>
-            <th>PROJECT TITLE</th>
-            <th>ASSIGNED TO</th>
-            <th className='stat'>STATUS</th>
-            <th>ACTION</th>
-            <th>DATE COMPLETED</th>
+      
+
+      <div className="table-container3">
+  <table className="request-table2">
+      <thead>
+        <tr>
+          <th>REQID</th>
+          <th>TIMESTAMP</th>
+          <th>PROJECT TITLE</th>
+          <th>ASSIGNED TO</th>
+          <th className='stat'>STATUS</th>
+          <th>ACTION</th>
+          <th>DATE COMPLETED</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentRequests.map((request) => (
+          <tr key={request._id} onClick={() => openModal(request)}>
+            <td>{request.referenceNumber}</td>
+            <td>{request.timestamp}</td>
+            <td>{request.projectTitle}</td>
+            <td>{request.assignedTo || 'Unassigned'}</td>
+            <td>
+              <select
+                value={request.status}
+                onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
+                onClick={(e) => e.stopPropagation()}
+                disabled={request.status === 2}
+              >
+                <option value={0}>Pending</option>
+                <option value={1}>Ongoing</option>
+                <option value={2}>Completed</option>
+                <option value={3}>Cancelled</option>
+              </select>
+            </td>
+            <td>
+              <button
+                className="assign-button2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openOverlay(request);
+                }}
+              >
+                Assign
+              </button>
+            </td>
+            <td>{request.completedAt ? new Date(request.completedAt).toLocaleString() : 'N/A'}</td>
+
           </tr>
-        </thead>
-        <tbody>
-          {currentRequests.map((request) => (
-            <tr key={request._id} onClick={() => openModal(request)}>
-              <td>{request.referenceNumber}</td>
-              <td>{request.timestamp}</td>
-              <td>{request.projectTitle}</td>
-              <td>{request.assignedTo || 'Unassigned'}</td>
-              <td>
-                <select
-                  value={request.status}
-                  onChange={(e) => handleStatusChange(request._id, Number(e.target.value))}
-                  onClick={(e) => e.stopPropagation()}
-                  disabled={request.status === 2}
-                >
-                  <option value={0}>Pending</option>
-                  <option value={1}>Ongoing</option>
-                  <option value={2}>Completed</option>
-                </select>
-              </td>
-              <td>
-                <button
-                  className="assign-button2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openOverlay(request);
-                  }}
-                >
-                  Assign
-                </button>
-              </td>
-              <td>{request.completedAt ? new Date(request.completedAt).toLocaleDateString() : 'N/A'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </tbody>
+    </table>
+</div>
+
     </div>
   );
 }
@@ -213,7 +221,6 @@ function AdminDashboard() {
 
   const teamMembers = ['Charles Coscos', 'Patrick Paclibar', 'Caryl Apa', 'Vincent Go', 'Rodel Bartolata', 'Tristan Chua', 'Jay-R'];
 
-<<<<<<< HEAD
   const getMonthNumber = (month) => {
     const months = {
       January: 1,
@@ -228,77 +235,16 @@ function AdminDashboard() {
       October: 10,
       November: 11,
       December: 12,
-=======
-    useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests', { mode: 'cors' });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch requests');
-                }
-                const data = await response.json();
-                setRequests(data);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setLoading(false);
-            }
-        };
-
-        fetchRequests();
-    }, []);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    const openOverlay = (request) => {
-        setSelectedRequest(request);
-        setOverlayVisible(true);
->>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
     };
     return months[month];
   };
 
-<<<<<<< HEAD
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/requests', { mode: 'cors' });
         if (!response.ok) {
           throw new Error('Failed to fetch requests');
-=======
-    const closeOverlay = () => {
-        setOverlayVisible(false);
-        setSelectedRequest(null);
-        setSelectedTeamMember('');
-    };
-
-    const handleSave = async () => {
-        if (selectedTeamMember) {
-            const updatedRequests = requests.map((request) =>
-                request._id === selectedRequest._id ? { ...request, assignedTo: selectedTeamMember } : request
-            );
-            setRequests(updatedRequests);
-
-            try {
-                const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${selectedRequest._id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ assignedTo: selectedTeamMember }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update request on the server');
-                }
-
-                closeOverlay();
-            } catch (err) {
-                console.error('Error updating request:', err);
-            }
-        } else {
-            alert('Please select a team member!');
->>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
         }
         const data = await response.json();
         setRequests(data);
@@ -309,76 +255,10 @@ function AdminDashboard() {
       }
     };
 
-<<<<<<< HEAD
     // Retrieve the saved page number from localStorage
     const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
       setCurrentPage(Number(savedPage)); // Set the current page to the saved value
-=======
-    const handleStatusChange = async (requestId, newStatus) => {
-        try {
-            const updatedRequests = requests.map((request) =>
-                request._id === requestId ? { ...request, status: newStatus } : request
-            );
-            setRequests(updatedRequests);
-
-            const response = await fetch(`https://backend-test-u9zl.onrender.com/api/requests/${requestId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update request status');
-            }
-        } catch (err) {
-            console.error('Error updating status:', err);
-        }
-    };
-
-    const openModal = (request) => {
-        setSelectedRequest(request);
-        setModalVisible(true);
-    };
-
-    const closeModal = () => {
-        setModalVisible(false);
-        setSelectedRequest(null);
-    };
-
-    const downloadFile = async (fileUrl, fileName) => {
-        try {
-            const response = await fetch(`https://backend-test-u9zl.onrender.com${fileUrl}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/pdf', // Adjust this according to your file type
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to download file');
-            }
-
-            const blob = await response.blob(); // Get the response as a Blob
-            const downloadUrl = window.URL.createObjectURL(blob); // Create a temporary URL
-
-            // Create an anchor element to trigger the download
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.setAttribute('download', fileName); // Set the download attribute with the file name
-            document.body.appendChild(link);
-            link.click(); // Programmatically click the link to download the file
-            link.remove(); // Clean up the link
-
-            window.URL.revokeObjectURL(downloadUrl); // Free up memory after download
-        } catch (error) {
-            console.error('Error downloading file:', error);
-        }
-    };
-
-    if (loading) {
-        return <div>Loading requests...</div>;
->>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
     }
 
     fetchRequests();
@@ -431,19 +311,20 @@ function AdminDashboard() {
 
   const handleStatusChange = async (requestId, newStatus) => {
     const completedAt = newStatus === 2 ? new Date().toISOString() : null;
-
+    const cancelledAt = newStatus === 3 ? new Date().toISOString() : null; // Handle the cancelled timestamp
+  
     try {
       const updatedRequests = requests.map((request) =>
-        request._id === requestId ? { ...request, status: newStatus, completedAt } : request
+        request._id === requestId ? { ...request, status: newStatus, completedAt, cancelledAt } : request
       );
       setRequests(updatedRequests);
-
+  
       const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus, completedAt }),
+        body: JSON.stringify({ status: newStatus, completedAt, cancelledAt }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to update request status');
       }
@@ -451,6 +332,7 @@ function AdminDashboard() {
       console.error('Error updating status:', err);
     }
   };
+  
 
   const openModal = (request) => {
     setSelectedRequest(request);
@@ -530,7 +412,7 @@ const filteredRequests = requests.filter((request) => {
       </div>
 
       <div className="dashboard-container2">
-        <div className="sidebar-wrapper">
+      <div className="sidebar-wrapper">
           <Sidebar />
         </div>
 
@@ -561,7 +443,6 @@ const filteredRequests = requests.filter((request) => {
             <h3>Request Details</h3>
             <table className="modal-table2">
               <tbody>
-                <tr><th>ID</th><td>{selectedRequest._id}</td></tr>
                 <tr><th>Email</th><td>{selectedRequest.email}</td></tr>
                 <tr><th>Name</th><td>{selectedRequest.name}</td></tr>
                 <tr><th>Type of Client</th><td>{selectedRequest.typeOfClient}</td></tr>
@@ -603,18 +484,21 @@ const filteredRequests = requests.filter((request) => {
         <div className="overlay2">
           <div className="lightbox-content2">
             <h3>Assign Request</h3>
-            <label>Select Team Member:</label>
-            <select
-              value={selectedTeamMember}
-              onChange={(e) => setSelectedTeamMember(e.target.value)}
-            >
-              <option value="" disabled>Select...</option>
-              {teamMembers.map((member, index) => (
-                <option key={index} value={member}>
-                  {member}
-                </option>
-              ))}
-            </select>
+            <div className="select-team-member-wrapper">
+  <label>Select Team Member:</label>
+  <select
+    value={selectedTeamMember}
+    onChange={(e) => setSelectedTeamMember(e.target.value)}
+  >
+    <option value="" disabled>Select...</option>
+    {teamMembers.map((member, index) => (
+      <option key={index} value={member}>
+        {member}
+      </option>
+    ))}
+  </select>
+</div>
+
             <div className="lightbox-actions2">
               <button onClick={handleSave} disabled={!selectedTeamMember}>
                 Save

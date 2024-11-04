@@ -17,19 +17,19 @@ body, html {
 }
 
 .header-wrapper {
-    margin-bottom: 20px; /* Spacing below header */
+    margin-bottom: 20px;
 }
 
 .status-summary-wrapper {
-    margin-bottom: 20px; /* Spacing below status summary */
+    margin-bottom: 20px;
 }
 
 .dashboard-container2 {
     display: flex;
     height: 100vh;
     width: 100vw;
-    padding-left: 250px; /* Adjust the padding for the fixed sidebar */
-    box-sizing: border-box; /* Ensure padding is part of the width */
+    padding-left: 260px;
+    box-sizing: border-box;
 }
 
 /* Sidebar */
@@ -48,6 +48,24 @@ body, html {
     justify-content: flex-start;
     height: 100vh;
     box-sizing: border-box;
+    overflow-y: auto;
+    transition: transform 0.4s ease-in-out;
+}
+
+/* Enhanced scrollbar for sidebar */
+.sidebar2, .request-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+.sidebar2::-webkit-scrollbar, .request-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+.sidebar2::-webkit-scrollbar-thumb, .request-list-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+.sidebar2::-webkit-scrollbar-thumb:hover, .request-list-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 .sidebar2 ul {
@@ -67,23 +85,52 @@ body, html {
     border-radius: 5px;
 }
 
+/* Active sidebar item */
+.sidebar2 ul li.active {
+    background-color: #1D2D50;
+    font-weight: bold;
+    border-left: 4px solid #1db954;
+}
+
+/* Tooltip for sidebar items */
+.sidebar2 ul li:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 110%;
+    background-color: #34495e;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+/* Sidebar Collapse for Small Screens */
+@media (max-width: 576px) {
+    .sidebar2 {
+        transform: translateX(-100%);
+    }
+    .sidebar2.open {
+        transform: translateX(0);
+    }
+}
+
 /* Header Content */
 .header-content2 {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    align-items: center; /* Center items vertically within the header */
+    align-items: center;
     padding: 20px;
     background-color: #fff;
     box-sizing: border-box;
-    border-bottom: 1px solid #ddd; /* Optional: Add bottom border for separation */
+    border-bottom: 1px solid #ddd;
 }
 
 .header-left2 {
     flex: 1;
     display: flex;
     align-items: center;
-    margin-left: 300px; /* Adjust left margin for consistency */
+    margin-left: 300px;
 }
 
 .header-right2 {
@@ -113,37 +160,33 @@ body, html {
 .stat-container2 {
     display: flex;
     justify-content: space-between;
-    width: calc(100% - 400px); /* Adjust to fit the width after sidebar */
-    padding: 20px 30px;
-    height: 150px;
-    background-color: #fff;
-    border-radius: 20px;
-    margin-left: 330px; /* Push it to the right */
+    width: calc(105% - 400px);
+    padding: 15px 25px;
+    height: 130px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 15px;
+    margin-left: 295px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-box2 {
     background-color: #d3d7e0;
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
     text-align: center;
     font-size: 16px;
     color: #1D2D50;
     font-weight: 600;
     flex: 1;
-    margin: 0 5px;
+    margin: 0 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    transition: transform 0.2s ease;
 }
-
-.stat-box2:first-child {
-    margin-left: 0;
-}
-
-.stat-box2:last-child {
-    margin-right: 0;
+.stat-box2:hover {
+    transform: scale(1.05);
 }
 
 .label {
@@ -159,31 +202,44 @@ body, html {
     color: #1D2D50;
 }
 
+/* Flex-Wrapping Stat Boxes on Small Screens */
+@media (max-width: 768px) {
+    .stat-container2 {
+        flex-wrap: wrap;
+        height: auto;
+        gap: 10px;
+    }
+    .stat-box2 {
+        flex: 1 1 45%;
+        margin: 5px;
+    }
+}
+
 /* Main Content Section */
 .content-section2 {
     display: flex;
     justify-content: space-between;
     gap: 30px;
     width: 100%;
-    height: calc(124vh - 200px); /* Adjusted height */
-    padding: 20px; /* Added padding for spacing */
+    height: calc(124vh - 200px);
+    padding: 20px;
     box-sizing: border-box;
 }
 
 /* Request List Container */
-.request-list2 {
+.request-list-container {
     flex-grow: 8;
     background-color: #fff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    height: calc(95vh - 240px);
+    height: calc(85vh - 200px);
     overflow-y: auto;
     box-sizing: border-box;
-    margin-left: 10px; /* Reduced margin for spacing */
-    width: calc(100% - 70px); /* Adjusted width */
+    margin-left: 5px;
+    width: calc(100% - 50px);
 }
 
 .search-and-pagination-container {
@@ -191,12 +247,12 @@ body, html {
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    margin-bottom: 20px;
-    width: 100%; /* Ensure it spans the full width */
+    margin-bottom: 0px;
+    width: 100%;
 }
 
 .search-input {
-    width: 400px; /* Shorten the width */
+    width: 250px;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -206,41 +262,127 @@ body, html {
 .month-filter-pagination {
     display: flex;
     align-items: center;
-    gap: 20px; /* Increase gap for breathing room */
-    justify-content: flex-end; /* Align filter and pagination to the right */
-    flex: 1; /* Ensure the pagination controls also take up space */
-}
-
-.pagination-controls {
-    position: absolute; /* Position the controls absolutely */
-    top: 330px; /* Adjust the top position */
-    right: 43px; /* Adjust the right position */
-    display: flex;
-    align-items: center;
     gap: 15px;
+    justify-content: flex-start;
+    flex: 1;
+    padding-bottom: 0px;
 }
 
-.table-container {
-    position: relative; /* Make the container relative to position the pagination inside */
+.month-filter-pagination select {
+    width: 150px;
 }
 
-.pagination-info {
-    font-size: 14px;
+/* Table Styling */
+.request-table2 {
+    width: 100%;
+    border-collapse: collapse; /* Ensures borders are unified for a grid-like appearance */
+    table-layout: fixed;
+}
+
+.request-table2 th, .request-table2 td {
+    padding: 8px 10px;
+    text-align: left;
+    border: 1px solid rgb(223, 215, 215); /* Adds grid lines between cells */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 12px;
+}
+
+/* Header Styling */
+.request-table2 th {
+    background-color: #1D2D50;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    padding: 8px 10px;
+}
+
+/* Data Cell Styling */
+.request-table2 td {
+    font-size: 12px;
     color: #333;
+    padding: 8px 10px;
 }
 
-.pagination-buttons {
+/* Row Background Colors */
+.request-table2 tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.request-table2 tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Column Width Adjustments */
+.request-table2 th:nth-child(1), .request-table2 td:nth-child(1) {
+    width: 5%;
+}
+
+.request-table2 th:nth-child(2), .request-table2 td:nth-child(2) {
+    width: 12%;
+}
+
+.request-table2 th:nth-child(3), .request-table2 td:nth-child(3) {
+    width: 30%;
+}
+
+.request-table2 th:nth-child(4), .request-table2 td:nth-child(4) {
+    width: 10%;
+}
+
+.request-table2 th:nth-child(5), .request-table2 td:nth-child(5) {
+    width: 10%;
+}
+
+.request-table2 th:nth-child(6), .request-table2 td:nth-child(6) {
+    width: 10%;
+}
+
+.request-table2 th:nth-child(7), .request-table2 td:nth-child(7) {
+    width: 9%;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+    .request-table2 th:nth-child(7),
+    .request-table2 td:nth-child(7) {
+        display: none;
+    }
+}
+
+/* Pagination Controls Styling */
+.pagination-controls {
     display: flex;
-    gap: 5px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    padding-top: 0px;
 }
 
 .pagination-btn {
     padding: 8px 12px;
+    margin: 0 5px;
     background-color: #001f3f;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination-btn:hover {
+    background-color: #1A5FA6;
+    color: white;
+}
+
+.pagination-btn:focus {
+    outline: 2px solid #1A5FA6;
 }
 
 .pagination-btn:disabled {
@@ -248,54 +390,30 @@ body, html {
     cursor: not-allowed;
 }
 
-/* Table Styling */
-.table-container2 {
-    width: 100%;
-    overflow-x: auto;
-    height: calc(90vh - 300px);
-    overflow-y: auto;
-    box-sizing: border-box;
+/* Responsive Font Size Adjustments */
+@media (max-width: 480px) {
+    .header-content2 h1 {
+        font-size: 20px;
+    }
+    .stat-box2 .value {
+        font-size: 20px;
+    }
+    .menu-item {
+        font-size: 1em;
+    }
 }
 
-.request-table2 th, .request-table2 td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    white-space: normal; /* Allow normal text wrapping */
-    word-break: break-word; /* Break long words onto a new line */
-}
-
-.request-table2 th:nth-child(3), /* Project Title Column */
-.request-table2 td:nth-child(3) {
-    width: 40%; /* Adjust width to prevent long text from spilling */
-}
-
-.request-table2 th:nth-child(4), /* Assigned To Column */
-.request-table2 td:nth-child(4) {
-    width: 15%; /* Adjust width for better spacing */
-}
-
-.request-table2 th {
-    background-color: #1D2D50;
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-.request-table2 td {
-    font-size: 14px;
-    color: #333;
-}
-
-.request-table2 tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.request-table2 tr:hover {
-    background-color: #f1f1f1;
+/* Adjustments for Small Screens and Landscape Mode */
+@media (max-width: 600px) and (orientation: landscape) {
+    .dashboard-container2 {
+        padding-left: 20px;
+    }
+    .header-content2 h1 {
+        font-size: 18px;
+    }
+    .stat-box2 .value {
+        font-size: 18px;
+    }
 }
 
 /* Modal and Lightbox Styling */
@@ -305,14 +423,121 @@ body, html {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    overflow-y: auto;
 }
 
-.lightbox-content2, .modal-content2 {
+.modal-content2 {
+    background-color: white;
+    width: 100vw;
+    height: 100vh;
+    padding: 15px;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+    overflow-y: auto;
+}
+
+.modal-content2 h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #0a2540;
+    text-align: center;
+}
+
+/* Table inside Modal */
+.modal-table2 {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    text-align: left;
+    table-layout: auto;
+}
+
+.modal-table2 th, .modal-table2 td {
+    padding: 12px 15px;
+    font-size: 12px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.modal-table2 th {
+    font-weight: bold;
+    width: 30%;
+    color: #0a2540;
+}
+
+.modal-table2 td {
+    color: #555;
+}
+
+/* Alternating row colors */
+.modal-table2 tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Download Button */
+.modal-table2 button {
+    background-color: #1db954;
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-table2 button:hover {
+    background-color: #17a84b;
+}
+
+/* Close Button */
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #0a2540;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 1001;
+}
+
+.close-modal-btn:hover {
+    background-color: #1b3a61;
+}
+
+/* Modal Table for small screens */
+@media (max-width: 600px) {
+    .modal-content2 {
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+    }
+
+    .modal-table2 th, .modal-table2 td {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+
+    .modal-table2 button {
+        font-size: 10px;
+    }
+}
+
+/* Lightbox Styling */
+.lightbox-content2 {
     background-color: #fff;
     padding: 40px;
     border-radius: 12px;
@@ -354,346 +579,4 @@ body, html {
 .lightbox-actions2 button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
-
-/* Modal Specific */
-.modal2 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-}
-
-.modal-content2 {
-    background-color: white;
-    width: 90vw; /* Adjust to a percentage for better responsiveness */
-    max-width: 600px;
-    height: 90vh;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: none;
-    overflow-y: auto;
-    position: relative;
-}
-
-.modal-content2 h3 {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.modal-content2 table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.modal-content2 table th,
-.modal-content2 table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
-
-.modal-content2 table th {
-    width: 30%; /* Label column width */
-}
-
-.modal-content2 table td {
-    width: 70%; /* Value column width */
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #d9534f;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.close-modal-btn:hover {
-    background-color: #c9302c;
-}
-
-/* Request Table Styling */
-.request-table2 {
-    width: 98%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.request-table2 th, .request-table2 td {
-    padding: 12px 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    white-space: normal; /* Allow text wrapping */
-    word-break: break-word; /* Ensure long text breaks gracefully */
-}
-
-.request-table2 th:nth-child(1), /* REQID Column */
-.request-table2 td:nth-child(1) {
-    width: 10%; /* Slightly smaller for REQID */
-}
-
-.request-table2 th:nth-child(2), /* TIMESTAMP Column */
-.request-table2 td:nth-child(2) {
-    width: 15%;
-}
-.request-table2 th:nth-child(2) {
-    padding-left: 40px; /* Adjust the value as needed for spacing */
-}
-
-.request-table2 th:nth-child(3), /* Project Title Column */
-.request-table2 td:nth-child(3) {
-    width: 40%; /* Project title should have enough space */
-}
-.request-table2 th:nth-child(3) {
-    padding-left: 10px; /* Adjust the value as needed for spacing */
-}
-
-
-.request-table2 th:nth-child(4), /* Assigned To Column */
-.request-table2 td:nth-child(4) {
-    width: 8%; /* Adjust width for proper spacing */
-}
-.request-table2 th:nth-child(5) {
-    padding-left: 35px; /* Adjust the value as needed for spacing */
-}
-
-/* Status Column */
-.request-table2 th:nth-child(5), /* Status Column */
-.request-table2 td:nth-child(5) {
-    width: 138px; /* Adjust width for the Status column */
-}
-.request-table2 th:nth-child(5) {
-    padding-left: 35px; /* Adjust the value as needed for spacing */
-}
-
-.request-table2 th:nth-child(6), /* Status Column */
-.request-table2 td:nth-child(6) {
-    width: 138px; /* Adjust width for the Status column */
-}
-.request-table2 th:nth-child(6) {
-    padding-left: 29px; /* Adjust the value as needed for spacing */
-}
-
-.request-table2 th, .request-table2 td {
-    font-size: 14px;
-    color: #333;
-}
-
-.request-table2 th {
-    background-color: #1D2D50;
-    color: white;
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-.request-table2 tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.request-table2 tr:hover {
-    background-color: #f1f1f1;
-}
-
-.search-and-pagination-container {
-    display: flex;
-    justify-content: flex-start; /* Ensure the elements align left */
-    align-items: center;
-    width: 100%; /* Full width for parent container */
-}
-
-.month-filter-pagination {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.pagination-controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    justify-content: flex-start; /* Align pagination to the left */
-    width: auto; /* Ensure it doesn't take up full width */
-}
-
-.pagination-info {
-    font-size: 14px;
-    color: #333;
-}
-
-.pagination-buttons {
-    display: flex;
-    gap: 5px;
-}
-
-.pagination-btn {
-    padding: 8px 12px;
-    background-color: #001f3f;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.pagination-btn:hover {
-    background-color: #003366;
-}
-
-.pagination-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Month Filter Dropdown */
-.month-filter-pagination {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Increase gap for breathing room */
-    justify-content: flex-start; /* Align it to the left */
-    width: auto; /* Ensure it doesn't take up the whole space */
-}
-
-.month-filter-pagination select {
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    color: #333;
-    width: 150px; /* Set a specific width for the dropdown */
-    max-width: 100%; /* Ensure it doesn't overflow */
-}
-
-/* Responsive Styles */
-@media (max-width: 1200px) {
-    .dashboard-container2 {
-        padding-left: 200px; /* Reduce sidebar padding for smaller screens */
-    }
-
-    .header-left2 {
-        margin-left: 200px; /* Adjust left margin for smaller screens */
-    }
-
-    .stat-container2 {
-        width: calc(100% - 300px); /* Adjust width for status summary */
-        margin-left: 150px; /* Adjust margin */
-    }
-
-    .request-list2 {
-        margin-left: 20px; /* Reduce left margin */
-        width: calc(100% - 20px); /* Adjust width */
-    }
-
-    .search-input {
-        width: 300px; /* Shorten the search input */
-    }
-}
-
-@media (max-width: 992px) {
-    .sidebar2 {
-        width: 180px; /* Reduce sidebar width */
-    }
-
-    .dashboard-container2 {
-        padding-left: 180px; /* Adjust for smaller sidebar */
-    }
-
-    .header-left2 {
-        margin-left: 180px; /* Adjust left margin */
-    }
-
-    .stat-container2 {
-        width: calc(100% - 250px); /* Further adjust width */
-        margin-left: 130px; /* Adjust left margin */
-    }
-
-    .content-section2 {
-        flex-direction: column; /* Stack content vertically */
-    }
-
-    .request-list2 {
-        margin-left: 10px; /* Reduce left margin */
-        width: calc(100% - 10px); /* Full width minus margin */
-    }
-
-    .search-input {
-        width: 250px; /* Adjust search input */
-    }
-}
-
-@media (max-width: 768px) {
-    .sidebar2 {
-        display: none; /* Hide sidebar on smaller screens */
-    }
-
-    .dashboard-container2 {
-        padding-left: 0; /* Remove sidebar padding */
-    }
-
-    .header-left2 {
-        margin-left: 0; /* Remove left margin */
-        justify-content: center; /* Center header content */
-    }
-
-    .stat-container2 {
-        width: 100%; /* Full width for status summary */
-        margin-left: 0; /* No left margin */
-    }
-
-    .request-list2 {
-        margin-left: 0; /* No left margin */
-        width: 100%; /* Full width */
-    }
-
-    .search-input {
-        width: 100%; /* Full width for search input */
-    }
-}
-
-/* Additional Breakpoints for Smaller Screens */
-@media (max-width: 576px) {
-    .header-content2 h1 {
-        font-size: 20px; /* Reduce font size for smaller screens */
-    }
-
-    .stat-box2 {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    .request-table2 th, .request-table2 td {
-        padding: 10px; /* Reduce padding for smaller screens */
-    }
-
-    .pagination-controls {
-        gap: 10px; /* Decrease gap for smaller screens */
-    }
-
-    .pagination-btn {
-        padding: 6px 8px; /* Smaller buttons */
-    }
-
-    .modal-content2 {
-        padding: 15px;
-        height: 80vh; /* Reduce height for smaller screens */
-    }
-
-    .close-modal-btn {
-        padding: 8px 12px; /* Adjust close button */
-    }
 }

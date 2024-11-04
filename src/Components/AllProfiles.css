@@ -1,77 +1,77 @@
 .all-profiles-container {
-    padding: 20px;
-    max-width: 1200px;
+    padding: 15px;
+    max-width: 1000px; /* Reduced width to fit smaller screens */
     margin: auto;
-    background-color: #f8f9fa; /* Light background color */
-    border-radius: 10px; /* Rounded container */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Soft shadow for container */
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 2em;
+    margin-bottom: 20px;
+    font-size: 1.8em; /* Reduced font size */
     font-weight: bold;
     color: #333;
 }
 
-.profiles-grid {
+.profiles-grid1 {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 15px; /* Reduced gap */
     justify-content: center;
 }
 
-.card {
-    background-color: #ffffff; /* White background for cards */
-    border: none; /* Remove border */
-    padding: 20px;
-    width: 40%;
-    max-width: 350px; /* Set max width for cards */
+.card1 {
+    background-color: #ffffff;
+    border: none;
+    padding: 15px; /* Reduced padding */
+    width: 100%; /* Make full width for smaller screens */
+    max-width: 300px; /* Reduced card width */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow for cards */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover animation */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px); /* Lift card on hover */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Add depth to shadow on hover */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .details {
-    margin-bottom: 15px;
+    margin-bottom: 10px; /* Reduced margin */
 }
 
 .profile-name {
-    font-size: 1.5em;
-    margin-bottom: 10px;
+    font-size: 1.2em; /* Reduced font size */
+    margin-bottom: 8px;
     color: #333;
     font-weight: bold;
 }
 
 .task-stats {
-    font-size: 1em;
+    font-size: 0.9em; /* Reduced font size */
     margin: 5px 0;
     color: #555;
 }
 
 .task-stats span {
     font-weight: bold;
-    color: #000; /* Make the stats more prominent */
+    color: #000;
 }
 
 .completion {
     display: flex;
     align-items: center;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .icon {
-    margin-right: 10px;
-    color: #6c757d; /* Icon color */
+    margin-right: 8px;
+    color: #6c757d;
 }
 
 .completion-label {
@@ -80,7 +80,7 @@ h1 {
 }
 
 .completion-rate {
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: green;
     margin-left: 5px;
     font-weight: bold;
@@ -93,6 +93,6 @@ h1 {
     }
 
     .card {
-        width: 90%; /* Adjust card size for smaller screens */
+        width: 100%; /* Adjust card size for smaller screens */
     }
 }

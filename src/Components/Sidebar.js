@@ -1,18 +1,38 @@
 // Components/Sidebar.js
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for routing
+import { useNavigate, useLocation } from 'react-router-dom'; 
+import { FaTachometerAlt, FaUserFriends, FaListAlt } from 'react-icons/fa'; 
 import './Sidebar.css';
 
 function Sidebar() {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+  const location = useLocation(); 
 
   return (
     <div className="sidebar">
-      <h3>Menu</h3>
-      <ul>
-        <li onClick={() => navigate('/dashboard')}>Dashboard</li> {/* Dashboard menu item */}
-        <li onClick={() => navigate('/profiles')}>All Profiles</li> {/* Profiles menu item */}
-        {/* Add more menu items as needed */}
+      <h3 className="sidebar-title">MENU</h3>
+      <ul className="menu-list">
+        <li
+          className={`menu-item ${location.pathname === '/dashboard' ? 'active' : ''}`}
+          onClick={() => navigate('/dashboard')}
+        >
+          <FaTachometerAlt className="menu-icon" />
+          DASHBOARD
+        </li>
+        <li
+          className={`menu-item ${location.pathname === '/profiles' ? 'active' : ''}`}
+          onClick={() => navigate('/profiles')}
+        >
+          <FaUserFriends className="menu-icon" />
+          ALL PROFILES
+        </li>
+        <li
+          className={`menu-item ${location.pathname === '/all-requests' ? 'active' : ''}`}
+          onClick={() => navigate('/all-requests')}
+        >
+          <FaListAlt className="menu-icon" />
+          ALL REQUESTS
+        </li>
       </ul>
     </div>
   );

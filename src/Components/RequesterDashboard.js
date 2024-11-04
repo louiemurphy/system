@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './RequesterDashboard.css'; // Custom CSS file for styling
 import { FaUsers, FaShoppingCart, FaBox } from 'react-icons/fa'; // Icons for cards
 
@@ -13,7 +13,7 @@ function RequesterDashboard() {
   const [selectedFile, setSelectedFile] = useState(null); // File upload state
   const [currentPage, setCurrentPage] = useState(1); // Pagination state
   const [selectedMonth, setSelectedMonth] = useState(''); // State for filtering by month
-  const requestsPerPage = 7; // Number of requests per page
+  const requestsPerPage = 5; // Number of requests per page
   const [modalVisible, setModalVisible] = useState(false); // Default is set to false
 
   const [requestForm, setRequestForm] = useState({
@@ -40,45 +40,35 @@ function RequesterDashboard() {
   const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', 'Proposal Approval', 'Design and Estimates', 'Program of Works', 'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works', 'Project Evaluation, Request for Quotation', 'Design and Estimates, Program of Works', 'Request for Quotation, Design and Estimates', 'Project Evaluation, Request for Quotation, Design and Estimates', 'Proposal Approval, Design and Estimates, Detailed Estimates of the Project', 'Request for Quotation, Design and Estimates, Product Presentation', 'Product Presentation', 'PVSYST Report', 'Electrical Diagram', 'Pricelist', 'Detailed Cost Estimates of the Project - total amount should match the selling price', 'Project Evaluation, Design and Estimates', 'Proposal Approval, Design and Estimates', 'Roofing Layout', 'Roofing Layout, Electrical Diagram', 'Schematic Diagram for Solar', 'Load Profiling', 'Data Sheet or Specification'];
 
   const typeOfClient = ['Private', 'Government'];
-<<<<<<< HEAD
 
   // Fetch all requests when the component mounts
   useEffect(() => {
     fetchRequests();
     loadRequestsFromLocalStorage();
   }, []);
-=======
->>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
 
-  const fetchRequests = useCallback(async () => {
+  const fetchRequests = async () => {
     try {
-      setLoading(true); // Set loading state to true
-      const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests');
-      
+      setLoading(true); // Set loading state
+      const response = await fetch('http://localhost:5000/api/requests');
       if (!response.ok) {
         throw new Error('Failed to fetch requests');
       }
-  
       const data = await response.json();
       setRequests(data); // Set fetched requests in the state
       saveRequestsToLocalStorage(data); // Save fetched requests to local storage
+      setLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       setError(error.message); // Set error if there's a problem with the fetch
-    } finally {
-      setLoading(false); // Ensure loading is stopped after try/catch
+      setLoading(false); // Stop loading on error
     }
-  }, []);
-  
-  const loadRequestsFromLocalStorage = useCallback(() => {
-    const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
-    setRequests(storedRequests); // Load requests from local storage into state
-  }, []);
+  };
 
-  // Using useEffect to fetch requests and load from local storage on mount
-  useEffect(() => {
-    fetchRequests();
-    loadRequestsFromLocalStorage();
-  }, [fetchRequests, loadRequestsFromLocalStorage]);
+  const loadRequestsFromLocalStorage = () => {
+    const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
+    setRequests(storedRequests);
+    setLoading(false); // Stop loading after loading from local storage
+  };
 
   const saveRequestsToLocalStorage = (requestsToSave) => {
     localStorage.setItem('requests', JSON.stringify(requestsToSave));
@@ -119,8 +109,8 @@ function RequesterDashboard() {
     return months[month] || '';
   };
 
-  // Filter requests by selected name and month
-  const filteredRequests = requests.filter((request) => {
+  const filteredRequests = requests
+  .filter((request) => {
     const requestDate = new Date(request.timestamp);
     const requestMonth = requestDate.getMonth() + 1;
 
@@ -129,7 +119,8 @@ function RequesterDashboard() {
     const matchesMonth = selectedMonth === '' || requestMonth === selectedMonthNumber;
 
     return matchesSearchQuery && matchesMonth;
-  });
+  })
+  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sort by timestamp in descending order
 
   // Calculate metrics for the selected user (filterName)
   const totalRequestsForUser = filteredRequests.length;
@@ -173,60 +164,66 @@ function RequesterDashboard() {
     e.preventDefault();
 
     if (validateForm()) {
-      try {
-        // Step 1: Create the request first (without file data)
-        const response = await fetch('https://backend-test-u9zl.onrender.com/api/requests', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
-        });
+        try {
+            // Step 1: Create the request first (without file data)
+            const response = await fetch('http://localhost:5000/api/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestForm), // Pass only the form data without file-related fields
+            });
 
-        if (!response.ok) {
-          throw new Error('Failed to create request');
+            if (!response.ok) {
+                throw new Error('Failed to create request');
+            }
+
+            const newRequest = await response.json(); // Get the newly created request
+
+            // Step 2: Upload the file if a file is selected
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile); // Attach the selected file
+                formData.append('requestId', newRequest._id); // Attach the newly created request ID
+
+                const uploadResponse = await fetch('http://localhost:5000/api/requester/upload', {
+                    method: 'POST',
+                    body: formData, // Send the file and requestId as FormData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('File upload failed');
+                }
+
+                // Fetch the updated request data after file upload
+                const updatedRequest = await uploadResponse.json();
+
+                // Manually update the request in the state
+                setRequests((prevRequests) =>
+                    [updatedRequest, ...prevRequests] // Prepend the updated request to the top
+                );
+            } else {
+                // No file upload, add the new request to the state
+                setRequests((prevRequests) =>
+                    [newRequest, ...prevRequests] // Prepend the new request to the top
+                );
+            }
+
+            // Step 3: Sort requests by timestamp (descending) after adding
+            setRequests((prevRequests) =>
+                prevRequests.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            );
+
+            // Step 4: Save the updated requests to localStorage
+            saveRequestsToLocalStorage([...requests, newRequest]);
+
+            // Step 5: Reset the form after successful submission
+            resetForm();
+            setSelectedFile(null); // Clear selected file
+            alert('Request submitted successfully.');
+        } catch (error) {
+            console.error('Error submitting the request:', error);
         }
-
-        const newRequest = await response.json(); // Get the newly created request
-
-        // Step 2: Upload the file if a file is selected
-        if (selectedFile) {
-          const formData = new FormData();
-          formData.append('file', selectedFile); // Attach the selected file
-          formData.append('requestId', newRequest._id); // Attach the newly created request ID
-<<<<<<< HEAD
-
-          const uploadResponse = await fetch('http://localhost:5000/api/requester/upload', {
-=======
-  
-          const uploadResponse = await fetch('https://backend-test-u9zl.onrender.com/api/requester/upload', {
->>>>>>> 1574e0a89913b5fe7ef99c45aacd8708312247ab
-            method: 'POST',
-            body: formData, // Send the file and requestId as FormData
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error('File upload failed');
-          }
-
-          // Fetch the updated request data after file upload
-          const updatedRequest = await uploadResponse.json();
-
-          // Manually update the request in the state
-          setRequests((prevRequests) =>
-            prevRequests.map((request) =>
-              request._id === updatedRequest._id ? updatedRequest : request
-            )
-          );
-        }
-
-        // Reset the form after successful submission
-        resetForm();
-        alert('Request submitted successfully.');
-      } catch (error) {
-        console.error('Error submitting the request:', error);
-      }
     }
-  };
-
+};
   const resetForm = () => {
     setRequestForm({
       email: '',
@@ -258,7 +255,7 @@ function RequesterDashboard() {
   
   const downloadFile = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`https://backend-test-u9zl.onrender.com${fileUrl}`, {
+      const response = await fetch(`http://localhost:5000${fileUrl}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/pdf', // Adjust this according to your file type
@@ -322,198 +319,158 @@ function RequesterDashboard() {
                 <p>CLOSED</p>
               </div>
             </div>
-
-            <button
-  className="create-request-btn"
-  onClick={() => {
-    console.log("Button clicked");
-    setShowRequestForm(!showRequestForm);
-  }}
->
-  {showRequestForm ? 'Cancel Request' : 'Create New Request'}
-</button>
-
-
             <div className="table-container">
-              <div className="table-header">
-                <h3 className='table2'>My Requests</h3>
+  <div className="table-header">
+    <h3 className="table2">Requester Table</h3>
+    <button className="create-request-btn1" onClick={() => setShowRequestForm(!showRequestForm)}>
+    {showRequestForm ? 'Cancel Request' : 'Create New Request'}
+  </button>
+  </div>
+  {/* Filters and Button Section */}
+  <div className="table-header">
+    <div className="filter-container">
+      <select className="name-filter" value={filterName} onChange={(e) => setFilterName(e.target.value)}>
+        <option value="">All Users</option>
+        {names.map((name, index) => (
+          <option key={index} value={name}>
+            {name}
+          </option>
+        ))}
+      </select>
 
-                <div className="filter-container">
-                  {/* Name filter dropdown */}
-                  <select
-                    className="name-filter"
-                    value={filterName}
-                    onChange={(e) => setFilterName(e.target.value)}
-                  >
-                    <option value="">All Users</option>
-                    {names.map((name, index) => (
-                      <option key={index} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
+      <select className="month-filter" value={selectedMonth} onChange={handleMonthChange}>
+        <option value="">All Months</option>
+        {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+          <option key={month} value={month}>{month}</option>
+        ))}
+      </select>
+    </div>
+    {/* Pagination Controls */}
+    <div className="pagination-controls1">
+    <button className="pagination-btn" onClick={handlePreviousPage} disabled={currentPage === 1}>
+      &lt;
+    </button>
+    <span className="pagination-info">
+      Page {currentPage} of {totalPages}
+    </span>
+    <button className="pagination-btn" onClick={handleNextPage} disabled={currentPage === totalPages}>
+      &gt;
+    </button>
+  </div>
+  </div>
+  {/* Request Table */}
+  <table className="request-table">
+    <thead>
+      <tr>
+        <th>REQID</th>
+        <th>Name</th>
+        <th>TIMESTAMP</th>
+        <th>PROJECT TITLE</th>
+        <th>ASSIGNED TO</th>
+        <th>STATUS</th>
+        <th>DATE COMPLETED</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentRequests.map((request) => (
+        <tr key={request._id} onClick={() => handleRowClick(request)}>
+          <td>{request.referenceNumber}</td>
+          <td>{request.name}</td>
+          <td>{request.timestamp}</td>
+          <td>{request.projectTitle}</td>
+          <td>{request.assignedTo || 'Unassigned'}</td>
+          <td>{request.status === 1 ? 'Ongoing' : request.status === 2 ? 'Complete' : 'Pending'}</td>
+          <td>{request.status === 2 ? new Date(request.completedAt).toLocaleString() : 'N/A'}</td>
 
-                  {/* Month filter dropdown */}
-                  <select
-                    className="month-filter"
-                    value={selectedMonth}
-                    onChange={handleMonthChange}
-                  >
-                    <option value="">All Months</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                  </select>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+            </div>
+            {selectedRequest && (
+              <div className="modal">
+                <div className="modal-content">
+                  <h3 className="modal-header">Request Details</h3>
+                  <table className="modal-table">
+                    <tbody>
+                      <tr>
+                        <th>Email</th>
+                        <td>{selectedRequest.email}</td>
+                      </tr>
+                      <tr>
+                        <th>Name</th>
+                        <td>{selectedRequest.name}</td>
+                      </tr>
+                      <tr>
+                        <th>Type of Client</th>
+                        <td>{selectedRequest.typeOfClient}</td>
+                      </tr>
+                      <tr>
+                        <th>Classification</th>
+                        <td>{selectedRequest.classification}</td>
+                      </tr>
+                      <tr>
+                        <th>Project Title</th>
+                        <td>{selectedRequest.projectTitle}</td>
+                      </tr>
+                      <tr>
+                        <th>Philgeps Reference Number</th>
+                        <td>{selectedRequest.philgepsReferenceNumber}</td>
+                      </tr>
+                      <tr>
+                        <th>Product Type</th>
+                        <td>{selectedRequest.productType}</td>
+                      </tr>
+                      <tr>
+                        <th>Request Type</th>
+                        <td>{selectedRequest.requestType}</td>
+                      </tr>
+                      <tr>
+                        <th>Date Needed</th>
+                        <td>{selectedRequest.dateNeeded}</td>
+                      </tr>
+                      <tr>
+                        <th>Special Instructions</th>
+                        <td>{selectedRequest.specialInstructions}</td>
+                      </tr>
+                      {selectedRequest.requesterFileUrl && (
+                        <tr>
+                          <th>From Requester:</th>
+                          <td>
+                            <button onClick={() => downloadFile(selectedRequest.requesterFileUrl, selectedRequest.requesterFileName)}>
+                              Download {selectedRequest.requesterFileName || 'file'}
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                      {selectedRequest.fileUrl && (
+                        <tr>
+                          <th>From Evaluator:</th>
+                          <td>
+                            <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
+                              Download {selectedRequest.fileName || 'evaluator file'}
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                      <tr>
+                        <th>Status</th>
+                        <td>{selectedRequest.status === 1 ? 'Ongoing' : selectedRequest.status === 2 ? 'Complete' : 'Pending'}</td>
+                      </tr>
+                      <tr>
+                        <th>Date Completed</th> 
+                        <td>{selectedRequest.status === 2 ? new Date(selectedRequest.completedAt).toLocaleString() : 'N/A'}</td>
+
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button onClick={closeModal} className="close-modal-btn">Close</button>
                 </div>
               </div>
-
-              <table className="request-table">
-                <thead>
-                  <tr>
-                    <th>REQID</th>
-                    <th>Name</th>
-                    <th>TIMESTAMP</th>
-                    <th>PROJECT TITLE</th>
-                    <th>ASSIGNED TO</th>
-                    <th>STATUS</th>
-                    <th>DATE COMPLETED</th> {/* Added Date Completed column */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentRequests.map((request) => (
-                    <tr key={request._id} onClick={() => handleRowClick(request)}>
-                      <td>{request.referenceNumber}</td>
-                      <td>{request.name}</td>
-                      <td>{request.timestamp}</td>
-                      <td>{request.projectTitle}</td>
-                      <td>{request.assignedTo || 'Unassigned'}</td>
-                      <td>{request.status === 1 ? 'Ongoing' : request.status === 2 ? 'Complete' : 'Pending'}</td>
-                      <td>{request.status === 2 ? new Date(request.completedAt).toLocaleDateString() : 'N/A'}</td> {/* Date Completed logic */}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Pagination Controls */}
-              {/* Pagination Controls */}
-{/* Pagination Controls */}
-<div className="pagination-controls1">
-  <button 
-    className="pagination-btn" 
-    onClick={handlePreviousPage} 
-    disabled={currentPage === 1}>
-    &lt;
-  </button>
-  <span className="pagination-info">
-    Page {currentPage} of {totalPages}
-  </span>
-  <button 
-    className="pagination-btn" 
-    onClick={handleNextPage} 
-    disabled={currentPage === totalPages}>
-    &gt;
-  </button>
-</div>
-
-
-            </div>
-          </div>
-
-          {selectedRequest && (
-            <div className="modal">
-              <div className="modal-content">
-                <h3 className="modal-header">Request Details</h3>
-                <table className="modal-table">
-                  <tbody>
-                    <tr>
-                      <th>ID</th>
-                      <td>{selectedRequest._id}</td>
-                    </tr>
-                    <tr>
-                      <th>Email</th>
-                      <td>{selectedRequest.email}</td>
-                    </tr>
-                    <tr>
-                      <th>Name</th>
-                      <td>{selectedRequest.name}</td>
-                    </tr>
-                    <tr>
-                      <th>Type of Client</th>
-                      <td>{selectedRequest.typeOfClient}</td>
-                    </tr>
-                    <tr>
-                      <th>Classification</th>
-                      <td>{selectedRequest.classification}</td>
-                    </tr>
-                    <tr>
-                      <th>Project Title</th>
-                      <td>{selectedRequest.projectTitle}</td>
-                    </tr>
-                    <tr>
-                      <th>Philgeps Reference Number</th>
-                      <td>{selectedRequest.philgepsReferenceNumber}</td>
-                    </tr>
-                    <tr>
-                      <th>Product Type</th>
-                      <td>{selectedRequest.productType}</td>
-                    </tr>
-                    <tr>
-                      <th>Request Type</th>
-                      <td>{selectedRequest.requestType}</td>
-                    </tr>
-                    <tr>
-                      <th>Date Needed</th>
-                      <td>{selectedRequest.dateNeeded}</td>
-                    </tr>
-                    <tr>
-                      <th>Special Instructions</th>
-                      <td>{selectedRequest.specialInstructions}</td>
-                    </tr>
-                    {selectedRequest.requesterFileUrl && (
-                      <tr>
-                        <th>From Requester:</th>
-                        <td>
-                          <button onClick={() => downloadFile(selectedRequest.requesterFileUrl, selectedRequest.requesterFileName)}>
-                            Download {selectedRequest.requesterFileName || 'file'}
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                    {selectedRequest.fileUrl && (
-                      <tr>
-                        <th>From Evaluator:</th>
-                        <td>
-                          <button onClick={() => downloadFile(selectedRequest.fileUrl, selectedRequest.fileName)}>
-                            Download {selectedRequest.fileName || 'evaluator file'}
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                    <tr>
-                      <th>Status</th>
-                      <td>{selectedRequest.status === 1 ? 'Ongoing' : selectedRequest.status === 2 ? 'Complete' : 'Pending'}</td>
-                    </tr>
-                    <tr>
-                      <th>Date Completed</th>
-                      <td>{selectedRequest.status === 2 ? new Date(selectedRequest.completedAt).toLocaleDateString() : 'N/A'}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <button onClick={closeModal} className="close-modal-btn">Close</button>
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
+            )}
+          </>
+        ) : (
         <section className="fullscreen-section">
   <div className="fullscreen-content">
   <button onClick={closeModal1} className="close-modal-btn">Close</button>

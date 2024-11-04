@@ -37,33 +37,36 @@ function AllProfiles() {
   }
 
   return (
-    <div className="all-profiles-container">
+    <div className="all-profiles-container1">
       <h1>EVALUATORS</h1>
-      <div className="profiles-grid">
-        {teamMembers.map((member) => (
-          <div key={member.name} className="card">
-            <div className="details">
-              <h2 className="profile-name">{member.name}</h2>
-              <p className="task-stats">
-                Open Tasks: <span>{member.openTasks}</span>
-              </p>
-              <p className="task-stats">
-                Closed Tasks: <span>{member.closedTasks}</span>
-              </p>
-              <p className="task-stats">
-                Total Requests: <span>{member.openTasks + member.closedTasks}</span> {/* Total requests */}
-              </p>
-              <p className="task-stats">
-                Efficiency: <span>{member.completionRate}%</span> {/* Use completion rate as efficiency */}
-              </p>
+      <div className="profiles-grid1">
+        {teamMembers.map((member) => {
+          const totalRequests = member.openTasks + member.closedTasks || 0; // Calculate total requests, default to 0 if both are 0
+          return (
+            <div key={member.name} className="card1">
+              <div className="details">
+                <h2 className="profile-name">{member.name}</h2>
+                <p className="task-stats">
+                  Open Tasks: <span>{member.openTasks}</span>
+                </p>
+                <p className="task-stats">
+                  Closed Tasks: <span>{member.closedTasks}</span>
+                </p>
+                <p className="task-stats">
+                  Total Requests: <span>{totalRequests}</span> {/* Total requests */}
+                </p>
+                <p className="task-stats">
+                  Efficiency: <span>{member.completionRate}%</span> {/* Use completion rate as efficiency */}
+                </p>
+              </div>
+              <div className="completion">
+                <FaBullseye className="icon" />
+                <span className="completion-label">Completion Rate: </span>
+                <span className="completion-rate">{member.completionRate}%</span>
+              </div>
             </div>
-            <div className="completion">
-              <FaBullseye className="icon" />
-              <span className="completion-label">Completion Rate: </span>
-              <span className="completion-rate">{member.completionRate}%</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
