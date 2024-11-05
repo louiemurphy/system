@@ -319,7 +319,7 @@ function AdminDashboard() {
       );
       setRequests(updatedRequests);
   
-      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
+      const response = await fetch(`https://system12.vercel.app/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, completedAt, cancelledAt }),
@@ -346,7 +346,7 @@ function AdminDashboard() {
 
   const downloadFile = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`http://localhost:5000${fileUrl}`, {
+      const response = await fetch(`https://system12.vercel.app${fileUrl}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/pdf',
