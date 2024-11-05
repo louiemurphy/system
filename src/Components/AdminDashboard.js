@@ -242,7 +242,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/requests', { mode: 'cors' });
+        const response = await fetch('https://system-delta-one.vercel.app/api/requests', { mode: 'cors' });
         if (!response.ok) {
           throw new Error('Failed to fetch requests');
         }
@@ -288,7 +288,7 @@ function AdminDashboard() {
       setRequests(updatedRequests);
 
       try {
-        const response = await fetch(`http://localhost:5000/api/requests/${selectedRequest._id}`, {
+        const response = await fetch(`https://system-delta-one.vercel.app/api/requests/${selectedRequest._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
