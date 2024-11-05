@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-  origin: 'http://localhost:3002', // Update with your frontend URL
+  origin: 'https://lawngreen-marten-574270.hostingersite.com/', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
