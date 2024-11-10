@@ -37,41 +37,41 @@ function RequesterDashboard() {
   const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', 'Proposal Approval', 'Design and Estimates', 'Program of Works', 'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works', 'Project Evaluation, Request for Quotation', 'Design and Estimates, Program of Works', 'Request for Quotation, Design and Estimates', 'Project Evaluation, Request for Quotation, Design and Estimates', 'Proposal Approval, Design and Estimates, Detailed Estimates of the Project', 'Request for Quotation, Design and Estimates, Product Presentation', 'Product Presentation', 'PVSYST Report', 'Electrical Diagram', 'Pricelist', 'Detailed Cost Estimates of the Project - total amount should match the selling price', 'Project Evaluation, Design and Estimates', 'Proposal Approval, Design and Estimates', 'Roofing Layout', 'Roofing Layout, Electrical Diagram', 'Schematic Diagram for Solar', 'Load Profiling', 'Data Sheet or Specification'];
   const typeOfClient = ['Private', 'Government'];
 
-  // Fetch requests function wrapped in useCallback
-  const fetchRequests = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:5000/api/requests');
-      if (!response.ok) {
-        throw new Error('Failed to fetch requests');
+    // Save requests to localStorage
+    const saveRequestsToLocalStorage = useCallback((requestsToSave) => {
+      localStorage.setItem('requests', JSON.stringify(requestsToSave));
+    }, []); // No dependencies needed here since we're just interacting with localStorage
+  
+    // Fetch requests function wrapped in useCallback
+    const fetchRequests = useCallback(async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/requests');
+        if (!response.ok) {
+          throw new Error('Failed to fetch requests');
+        }
+        const data = await response.json();
+        setRequests(data);
+        saveRequestsToLocalStorage(data); // Using saveRequestsToLocalStorage function here
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
-      setRequests(data);
-      saveRequestsToLocalStorage(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
+    }, [saveRequestsToLocalStorage]); // Added saveRequestsToLocalStorage to the dependency array
+  
+    // Load requests from localStorage
+    const loadRequestsFromLocalStorage = useCallback(() => {
+      const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
+      setRequests(storedRequests);
       setLoading(false);
-    }
-  }, []);
-
-  // Load requests from localStorage
-  const loadRequestsFromLocalStorage = useCallback(() => {
-    const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
-    setRequests(storedRequests);
-    setLoading(false);
-  }, []);
-
-  // Save requests to localStorage
-  const saveRequestsToLocalStorage = useCallback((requestsToSave) => {
-    localStorage.setItem('requests', JSON.stringify(requestsToSave));
-  }, []);
-
-  // useEffect with proper dependencies
-  useEffect(() => {
-    fetchRequests();
-    loadRequestsFromLocalStorage();
-  }, [fetchRequests, loadRequestsFromLocalStorage]);
+    }, []); // No dependencies needed here, since we are just reading from localStorage
+  
+    // useEffect with proper dependencies
+    useEffect(() => {
+      fetchRequests();
+      loadRequestsFromLocalStorage();
+    }, [fetchRequests, loadRequestsFromLocalStorage]); // Added both fetchRequests and loadRequestsFromLocalStorage as dependencies
 
   // Handle input changes
   const handleInputChange = (e) => {
