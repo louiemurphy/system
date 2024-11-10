@@ -288,7 +288,7 @@ function AdminDashboard() {
       setRequests(updatedRequests);
 
       try {
-        const response = await fetch(`'http://wggw44488ksg44k04w0w8gkc.49.145.226.126.sslip.io/api/requests/${selectedRequest._id}`, {
+        const response = await fetch(`'http://localhost:5000/api/requests/${selectedRequest._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -319,7 +319,7 @@ function AdminDashboard() {
       );
       setRequests(updatedRequests);
   
-      const response = await fetch(`http://wggw44488ksg44k04w0w8gkc.49.145.226.126.sslip.io/api/requests/${requestId}`, {
+      const response = await fetch(`http://localhost:5000/api/requests/${requestId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, completedAt, cancelledAt }),
@@ -346,7 +346,7 @@ function AdminDashboard() {
 
   const downloadFile = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`http://wggw44488ksg44k04w0w8gkc.49.145.226.126.sslip.io/${fileUrl}`, {
+      const response = await fetch(`http://localhost:5000/${fileUrl}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/pdf',
