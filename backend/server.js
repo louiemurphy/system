@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-  origin: 'https://system23.vercel.app/', // Update with your frontend URL
+  origin: 'localhost:3001/', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));

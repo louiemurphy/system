@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import './RequesterDashboard.css'; // Custom CSS file for styling
-import { FaUsers, FaShoppingCart, FaBox } from 'react-icons/fa'; // Icons for cards
+import React, { useState, useEffect, useCallback } from 'react';
+import './RequesterDashboard.css';
+import { FaUsers, FaShoppingCart, FaBox } from 'react-icons/fa';
 
 function RequesterDashboard() {
   // States
-  const [showRequestForm, setShowRequestForm] = useState(false); // Toggle form visibility
-  const [requests, setRequests] = useState([]); // State to store requests
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [selectedRequest, setSelectedRequest] = useState(null); // State for selected request
-  const [filterName, setFilterName] = useState(''); // State for filtering by name
-  const [selectedFile, setSelectedFile] = useState(null); // File upload state
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
-  const [selectedMonth, setSelectedMonth] = useState(''); // State for filtering by month
-  const requestsPerPage = 5; // Number of requests per page
-  const [modalVisible, setModalVisible] = useState(false); // Default is set to false
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [filterName, setFilterName] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const requestsPerPage = 5;
 
   const [requestForm, setRequestForm] = useState({
     email: '',
@@ -30,49 +29,49 @@ function RequesterDashboard() {
     status: 0,
   });
 
-  const [errors, setErrors] = useState({}); // To store form errors
+  const [errors, setErrors] = useState({});
 
-  // Mock data for dropdowns (same as before)
+  // Mock data for dropdowns
   const names = ['Cerael Donggay', 'Andrew Donggay', 'Aries Paye', 'Melody Nazareno', 'Roy Junsay', 'Mark Sorreda', 'Zir Madridano', 'Rizaldy Baldemor', 'Giovanne Bongga', 'Joyaneil Lumampao', 'Michael Bughanoy', 'Anthony De Gracia', 'Alex Cabisada', 'Matt Caulin', 'Richard Cagalawan', 'William Jover', 'Paul Shane Marte', 'Marvin Oteda', 'Julius Tan', 'Joren Bangquiao', 'Diane Yumul', 'Kenneth Fabroa', 'Mylene Agurob', 'BIDDING TEAM - Kia', 'Novi Generalao', 'BIDDING TEAM - Cora', 'BIDDING TEAM - Jan', 'BIDDING TEAM - Kaye', 'Marketing', 'Freelance', 'Ronie Serna', 'Andy Bello', 'Simon Paul Molina', 'Ralph Reginald Hallera Yee', 'Cesar Samboy Sassan'];
-
   const productTypes = ['Solar Roof Top', 'Solar Lights', 'Solar Pump', 'AC Lights', 'Diesel Generator', 'Transformer', 'Electric Vehicle', 'Floating Solar', 'Micro Grid', 'Solar Road Stud', 'Georesistivity', 'Drilling', 'Prefab Container', 'Command Center', 'ICT Products', 'Energy Audit', 'Building Construction', 'Road Concreting', 'Drone', 'Agricultural Machinery', 'Ice Machine', 'Riprap', 'Retaining Wall', 'Industrial Pumps', 'Building Wiring Installation', 'Solar CCTV', 'Solar Farm', 'Solar Insect Traps', 'Solar Water Heater', 'Concrete Water Tank', 'Solar Waiting Shed', 'Solar Prefab Container', 'Structured Cabling', 'Water Desalination', 'Steel Water Tank', 'Hydroponics', 'HVAC', 'Piping System', 'Water System', 'Conveyor System', 'Solar Generator', 'Solar Water Purifier', 'Heavy Equipment', 'Traffic Light', 'AC CCTV', 'Solar Aerator', 'AC Aerator'];
-
   const requestTypes = ['Site Survey', 'Project Evaluation', 'Request for Quotation', 'Proposal Approval', 'Design and Estimates', 'Program of Works', 'Project Evaluation, Request for Quotation, Proposal Approval, Design and Estimates, Program of Works', 'Project Evaluation, Request for Quotation', 'Design and Estimates, Program of Works', 'Request for Quotation, Design and Estimates', 'Project Evaluation, Request for Quotation, Design and Estimates', 'Proposal Approval, Design and Estimates, Detailed Estimates of the Project', 'Request for Quotation, Design and Estimates, Product Presentation', 'Product Presentation', 'PVSYST Report', 'Electrical Diagram', 'Pricelist', 'Detailed Cost Estimates of the Project - total amount should match the selling price', 'Project Evaluation, Design and Estimates', 'Proposal Approval, Design and Estimates', 'Roofing Layout', 'Roofing Layout, Electrical Diagram', 'Schematic Diagram for Solar', 'Load Profiling', 'Data Sheet or Specification'];
-
   const typeOfClient = ['Private', 'Government'];
 
-  // Fetch all requests when the component mounts
-  useEffect(() => {
-    fetchRequests();
-    loadRequestsFromLocalStorage();
-  }, []);
-
-  const fetchRequests = async () => {
+  // Fetch requests function wrapped in useCallback
+  const fetchRequests = useCallback(async () => {
     try {
-      setLoading(true); // Set loading state
+      setLoading(true);
       const response = await fetch('http://localhost:5000/api/requests');
       if (!response.ok) {
         throw new Error('Failed to fetch requests');
       }
       const data = await response.json();
-      setRequests(data); // Set fetched requests in the state
-      saveRequestsToLocalStorage(data); // Save fetched requests to local storage
-      setLoading(false); // Set loading to false after data is fetched
+      setRequests(data);
+      saveRequestsToLocalStorage(data);
     } catch (error) {
-      setError(error.message); // Set error if there's a problem with the fetch
-      setLoading(false); // Stop loading on error
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const loadRequestsFromLocalStorage = () => {
+  // Load requests from localStorage
+  const loadRequestsFromLocalStorage = useCallback(() => {
     const storedRequests = JSON.parse(localStorage.getItem('requests')) || [];
     setRequests(storedRequests);
-    setLoading(false); // Stop loading after loading from local storage
-  };
+    setLoading(false);
+  }, []);
 
-  const saveRequestsToLocalStorage = (requestsToSave) => {
+  // Save requests to localStorage
+  const saveRequestsToLocalStorage = useCallback((requestsToSave) => {
     localStorage.setItem('requests', JSON.stringify(requestsToSave));
-  };
+  }, []);
+
+  // useEffect with proper dependencies
+  useEffect(() => {
+    fetchRequests();
+    loadRequestsFromLocalStorage();
+  }, [fetchRequests, loadRequestsFromLocalStorage]);
 
   // Handle input changes
   const handleInputChange = (e) => {
