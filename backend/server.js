@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 app.use(cors({
-  origin: 'localhost:3001/', // Update with your frontend URL
+  origin: 'http://wggw44488ksg44k04w0w8gkc.49.145.226.126.sslip.io/', // Update with your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
